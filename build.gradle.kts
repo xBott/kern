@@ -1,5 +1,6 @@
 plugins {
     java
+    `maven-publish`
 }
 
 allprojects {
@@ -13,6 +14,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "maven-publish")
 
     dependencies {
 
@@ -24,6 +26,14 @@ subprojects {
 
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("mavenJava") {
+                from(components["java"])
+            }
+        }
     }
 
     tasks.test {
