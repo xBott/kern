@@ -2,7 +2,9 @@ package me.bottdev.kern.struct.graph;
 
 import me.bottdev.kern.struct.property.PropertyHolder;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface Graph<N, E extends EndpointPair<N>> extends PropertyHolder {
 
@@ -23,6 +25,15 @@ public interface Graph<N, E extends EndpointPair<N>> extends PropertyHolder {
 
     boolean hasNode(N node);
     boolean hasEdgeConnecting(N nodeU, N nodeV);
+    default Set<E> edgesConnecting(N nodeU, N nodeV) {
+        return outEdges(nodeU).stream()
+                .filter(edge -> edge.hasEndpoint(nodeV))
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    default Optional<E> edgeConnecting(N nodeU, N nodeV) {
+        return edgesConnecting(nodeU, nodeV).stream().findFirst();
+    }
 
 
     default int nodeCount() { return nodes().size(); }
