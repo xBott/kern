@@ -1,4 +1,4 @@
-package me.bottdev.kern.struct.graph.mst;
+package me.bottdev.kern.struct.algorithms.mst;
 
 import me.bottdev.kern.struct.graph.EndpointPair;
 import me.bottdev.kern.struct.graph.Graph;
@@ -7,7 +7,7 @@ import me.bottdev.kern.struct.graph.Weighted;
 
 import java.util.*;
 
-public class PrimMstAlgorithm {
+public class PrimMst {
 
     <N, E extends EndpointPair<N> & Weighted> Optional<Graph<N, E>> apply(
             Graph<N, E> graph,
