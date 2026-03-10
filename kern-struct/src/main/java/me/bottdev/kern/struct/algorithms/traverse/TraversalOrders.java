@@ -1,8 +1,8 @@
-package me.bottdev.kern.struct.graph.traverse;
+package me.bottdev.kern.struct.algorithms.traverse;
 
 import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.traverse.orders.BfsTraversalOrder;
-import me.bottdev.kern.struct.graph.traverse.orders.DfsTraversalOrder;
+import me.bottdev.kern.struct.algorithms.traverse.orders.BfsTraversalOrder;
+import me.bottdev.kern.struct.algorithms.traverse.orders.DfsTraversalOrder;
 
 public class TraversalOrders {
 

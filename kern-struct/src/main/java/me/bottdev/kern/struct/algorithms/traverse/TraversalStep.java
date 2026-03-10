@@ -1,4 +1,4 @@
-package me.bottdev.kern.struct.graph.traverse;
+package me.bottdev.kern.struct.algorithms.traverse;
 
 import me.bottdev.kern.struct.graph.EndpointPair;
 import me.bottdev.kern.struct.graph.Graph;
