@@ -13,7 +13,7 @@ public abstract class EndpointPair<N> implements Iterable<N> {
         return new Directed<>(source, target);
     }
 
-    public static <N> Directed<N> directed(N source, N target, double weight) {
+    public static <N> WeightedDirected<N> directed(N source, N target, double weight) {
         return new WeightedDirected<>(source, target, weight);
     }
 
@@ -21,7 +21,7 @@ public abstract class EndpointPair<N> implements Iterable<N> {
         return new Undirected<>(nodeU, nodeV);
     }
 
-    public static <N> Undirected<N> undirected(N nodeU, N nodeV, double weight) {
+    public static <N> WeightedUndirected<N> undirected(N nodeU, N nodeV, double weight) {
         return new WeightedUndirected<>(nodeU, nodeV, weight);
     }
 
