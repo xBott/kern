@@ -6,9 +6,7 @@ import java.util.LinkedList;
 
 public class Dijkstra {
 
-    public <N, T extends PathStructure<N>> DijkstraPath<N> shortestPath(T structure, N start, N target)
-        throws DijkstraException
-    {
+    public <N, T extends PathStructure<N>> DijkstraPath<N> shortestPath(T structure, N start, N target) {
 
         DijkstraState<N> state = initialize(start);
 
@@ -26,9 +24,7 @@ public class Dijkstra {
         return state;
     }
 
-    private <N, T extends PathStructure<N>> void run(T structure, DijkstraState<N> state, N target)
-            throws DijkstraException
-    {
+    private <N, T extends PathStructure<N>> void run(T structure, DijkstraState<N> state, N target) {
 
         while (state.hasNext()) {
 
