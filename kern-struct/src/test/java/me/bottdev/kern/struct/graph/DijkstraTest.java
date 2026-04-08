@@ -1,8 +1,7 @@
+package me.bottdev.kern.struct.graph;
+
 import me.bottdev.kern.struct.algorithms.shortestpath.Dijkstra;
 import me.bottdev.kern.struct.algorithms.shortestpath.DijkstraPath;
-import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.Graph;
-import me.bottdev.kern.struct.graph.GraphPathAdapter;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

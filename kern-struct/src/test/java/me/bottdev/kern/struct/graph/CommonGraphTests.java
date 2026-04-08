@@ -1,6 +1,5 @@
-import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.Graph;
-import me.bottdev.kern.struct.graph.MutableGraph;
+package me.bottdev.kern.struct.graph;
+
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
 import me.bottdev.kern.struct.algorithms.traverse.GraphTraversal;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalOrders;

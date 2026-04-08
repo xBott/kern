@@ -1,8 +1,8 @@
+package me.bottdev.kern.struct.graph;
+
 import me.bottdev.kern.struct.algorithms.cycle.CycleDetector;
 import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
 import me.bottdev.kern.struct.algorithms.toposort.TopologicalSort;
-import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.Graph;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
