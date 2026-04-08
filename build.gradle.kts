@@ -6,9 +6,13 @@ plugins {
     id("maven-publish")
 }
 
+val rootEnvVars = DotEnvBuilder.dotEnv {
+    addFile("$rootDir/.env")
+}
+
 allprojects {
     project.group = "me.bottdev"
-    project.version = "0.0.1"
+    project.version = "0.0.2-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -20,13 +24,9 @@ subprojects {
     apply(plugin = "io.github.klahap.dotenv")
     apply(plugin = "maven-publish")
 
-    val envVars = DotEnvBuilder.dotEnv {
-        addFile("$rootDir/.env")
-    }
-    extra["envVars"] = envVars
+    extra["envVars"] = rootEnvVars
 
     dependencies {
-
         implementation("org.projectlombok:lombok:1.18.38")
         annotationProcessor("org.projectlombok:lombok:1.18.38")
 
@@ -40,17 +40,25 @@ subprojects {
     publishing {
         repositories {
             maven {
+
+                isAllowInsecureProtocol = true
                 name = project.name
-                url = uri("https://repo.nimbra.net/releases")
+                url = if (version.toString().endsWith("-SNAPSHOT"))
+                    uri("http://localhost:8080/snapshots")
+                else
+                    uri("http://localhost:8080/releases")
+
                 credentials {
-                    username = envVars["REPO_USERNAME"].toString()
-                    password = envVars["REPO_PASSWORD"].toString()
+                    username = rootEnvVars["REPO_USERNAME"].toString()
+                    password = rootEnvVars["REPO_PASSWORD"].toString()
                 }
+
                 authentication {
                     create<BasicAuthentication>("basic")
                 }
             }
         }
+
         publications {
             create<MavenPublication>("maven") {
                 groupId = "me.bottdev"
