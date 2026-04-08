@@ -41,12 +41,11 @@ subprojects {
         repositories {
             maven {
 
-                isAllowInsecureProtocol = true
                 name = project.name
                 url = if (version.toString().endsWith("-SNAPSHOT"))
-                    uri("http://localhost:8080/snapshots")
+                    uri("https://reposlite.nimbra.net/snapshots")
                 else
-                    uri("http://localhost:8080/releases")
+                    uri("https://reposlite.nimbra.net/releases")
 
                 credentials {
                     username = rootEnvVars["REPO_USERNAME"].toString()
