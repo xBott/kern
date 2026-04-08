@@ -8,14 +8,18 @@ public interface Grid<T> {
     int width();
     int height();
 
-    T get(int x, int y);
-    Optional<T> find(int x, int y);
+    T get(int row, int column);
+    Optional<T> find(int row, int column);
 
-    default boolean inBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < width() && y < height();
+    default boolean inBounds(int row, int column) {
+        return row >= 0 && column >= 0 && row < height() && column < width();
     }
 
-    Set<GridPosition<T>> neighbors4(int x, int y);
-    Set<GridPosition<T>> neighbors8(int x, int y);
+    Set<GridPosition<T>> neighbors4(int row, int column);
+    Set<GridPosition<T>> neighbors8(int row, int column);
+
+    Grid<T> immutableCopy();
+
+    MutableGrid<T> mutableCopy();
 
 }
