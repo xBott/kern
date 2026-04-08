@@ -1,4 +1,5 @@
 import me.bottdev.kern.struct.algorithms.cycle.CycleDetector;
+import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
 import me.bottdev.kern.struct.algorithms.toposort.TopologicalSort;
 import me.bottdev.kern.struct.graph.EndpointPair;
 import me.bottdev.kern.struct.graph.Graph;
@@ -14,11 +15,11 @@ import java.util.stream.Stream;
 
 class TopologicalSortTests {
 
-    private static TopologicalSort<String, String> topologicalSort;
+    private static TopologicalSort<String> topologicalSort;
 
     @BeforeAll
     static void setUp() {
-        CycleDetector<String, String> cycleDetector = CycleDetector.identityNormalizer();
+        CycleDetector<String> cycleDetector = new SimpleCycleDetector<>();
         topologicalSort = new TopologicalSort<>(cycleDetector);
     }
 

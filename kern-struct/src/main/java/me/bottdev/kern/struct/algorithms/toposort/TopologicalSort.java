@@ -10,9 +10,9 @@ import me.bottdev.kern.struct.graph.Graph;
 import java.util.*;
 
 @RequiredArgsConstructor
-public class TopologicalSort<N, K extends Comparable<K>> {
+public class TopologicalSort<N> {
 
-    private final CycleDetector<N, K> cycleDetector;
+    private final CycleDetector<N> cycleDetector;
 
     public Result<List<N>, CycleResult<N>> sort(Graph<N, ? extends EndpointPair<N>> graph) {
 
