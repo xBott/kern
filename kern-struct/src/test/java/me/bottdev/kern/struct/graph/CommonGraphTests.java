@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 public class CommonGraphTests {
 
     private static GraphTraversal<String, EndpointPair<String>> dfs;
@@ -74,6 +76,74 @@ public class CommonGraphTests {
                     System.out.println(step.node());
                 });
 
+    }
+
+    @Test
+    public void testNodeDegrees_ShouldReturnCorrectCount() {
+
+        MutableGraph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
+                .addEdge(EndpointPair.directed("A", "B"))
+                .addEdge(EndpointPair.directed("A", "C"))
+                .mutable();
+
+        int outDegreeA = graph.outDegree("A");
+        int inDegreeB = graph.inDegree("B");
+        int inDegreeA = graph.inDegree("A");
+
+        Assertions.assertEquals(2, outDegreeA, "У узла A должно быть 2 исходящих ребра");
+        Assertions.assertEquals(1, inDegreeB, "У узла B должно быть 1 входящее ребро");
+        Assertions.assertEquals(0, inDegreeA, "У узла A не должно быть входящих ребер");
+    }
+
+    @Test
+    public void testNodeDegrees_ShouldReturnCorrectDegrees() {
+
+        MutableGraph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
+                .addEdge(EndpointPair.directed("A", "B"))
+                .addEdge(EndpointPair.directed("B", "C"))
+                .mutable();
+
+        int inDegreeA = graph.inDegree("A");
+        int inDegreeB = graph.inDegree("B");
+        int inDegreeC = graph.inDegree("C");
+
+        int outDegreeA = graph.outDegree("A");
+        int outDegreeB = graph.outDegree("B");
+        int outDegreeC = graph.outDegree("C");
+
+        Assertions.assertEquals(0, inDegreeA, "У узла A должно быть 0 входящих ребер");
+        Assertions.assertEquals(1, inDegreeB, "У узла B должно быть 1 входящее ребро");
+        Assertions.assertEquals(1, inDegreeC, "У узла C должно быть 1 входящее ребро");
+
+        Assertions.assertEquals(1, outDegreeA, "У узла A должно быть 1 исходящее ребер");
+        Assertions.assertEquals(1, outDegreeB, "У узла B должно быть 1 исходящее ребро");
+        Assertions.assertEquals(0, outDegreeC, "У узла C должно быть 0 исходящих ребер");
+    }
+
+    @Test
+    public void testSuccessorsAndPredecessors_ShouldIdentifyCorrectNodes() {
+
+        Graph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
+                .addEdge(EndpointPair.directed("X", "Y"))
+                .immutable();
+
+        Set<String> successorsX = graph.successors("X");
+        Set<String> predecessorsY = graph.predecessors("Y");
+
+        Assertions.assertTrue(successorsX.contains("Y"), "Y должен быть наследником X");
+        Assertions.assertTrue(predecessorsY.contains("X"), "X должен быть предшественником Y");
+        Assertions.assertFalse(successorsX.contains("X"), "X не должен быть наследником самого себя без петли");
+    }
+
+    @Test
+    public void testHasEdgeConnecting_WithNonExistentNodes_ShouldReturnFalse() {
+        Graph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
+                .addNode("A")
+                .immutable();
+
+        boolean connectionExists = graph.hasEdgeConnecting("A", "B");
+
+        Assertions.assertFalse(connectionExists, "Связь с несуществующим узлом B не должна существовать");
     }
 
 
