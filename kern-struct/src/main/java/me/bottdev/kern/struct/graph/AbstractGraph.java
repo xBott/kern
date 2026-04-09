@@ -2,8 +2,6 @@ package me.bottdev.kern.struct.graph;
 
 import me.bottdev.kern.struct.property.PropertyStore;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,10 +37,9 @@ public abstract class AbstractGraph<N, E extends EndpointPair<N>> implements Gra
 
     @Override
     public Set<N> adjacentNodes(N node) {
-       Set<N> adjacentNodes = new LinkedHashSet<>();
-       adjacentNodes.addAll(successors(node));
-       adjacentNodes.addAll(predecessors(node));
-       return Collections.unmodifiableSet(adjacentNodes);
+        return incidentEdges(node).stream()
+                .map(edge -> edge.adjacentNode(node))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
@@ -69,12 +66,16 @@ public abstract class AbstractGraph<N, E extends EndpointPair<N>> implements Gra
 
     @Override
     public int inDegree(N node) {
-        return inEdges(node).size();
+        return (int) incidentEdges(node).stream()
+                .filter(edge -> edge.reachableFrom(edge.adjacentNode(node)).isPresent())
+                .count();
     }
 
     @Override
     public int outDegree(N node) {
-        return outEdges(node).size();
+        return (int) incidentEdges(node).stream()
+                .filter(edge -> edge.reachableFrom(node).isPresent())
+                .count();
     }
 
     @Override
@@ -84,7 +85,7 @@ public abstract class AbstractGraph<N, E extends EndpointPair<N>> implements Gra
 
     @Override
     public boolean hasEdgeConnecting(N nodeU, N nodeV) {
-        if (!hasNode(nodeU)) return false;
+        if (!hasNode(nodeU) || !hasNode(nodeV)) return false;
         return incidentEdges(nodeU).stream()
                 .anyMatch(edge -> edge.hasEndpoint(nodeV));
     }
