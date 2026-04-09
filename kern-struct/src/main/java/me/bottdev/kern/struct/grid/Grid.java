@@ -11,6 +11,8 @@ public interface Grid<T> {
     int height();
 
     T get(int row, int column);
+    GridPosition<T> positioned(int row, int column);
+
     Optional<T> find(int row, int column);
 
     default boolean inBounds(int row, int column) {

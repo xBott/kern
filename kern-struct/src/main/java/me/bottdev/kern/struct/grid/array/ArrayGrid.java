@@ -62,6 +62,12 @@ public class ArrayGrid<T> implements Grid<T> {
     }
 
     @Override
+    public GridPosition<T> positioned(int row, int column) {
+        T value = get(row, column);
+        return new GridPosition<>(row, column, value);
+    }
+
+    @Override
     public Optional<T> find(int row, int column) {
         return inBounds(row, column) ? Optional.ofNullable(data[row][column]) : Optional.empty();
     }
