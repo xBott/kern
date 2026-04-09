@@ -9,7 +9,7 @@ import java.util.*;
 
 public class PrimMst {
 
-    <N, E extends EndpointPair<N> & Weighted> Optional<Graph<N, E>> apply(
+    public <N, E extends EndpointPair<N> & Weighted> Optional<Graph<N, E>> apply(
             Graph<N, E> graph,
             GraphBuilder<N, E> mstBuilder
     ) {
