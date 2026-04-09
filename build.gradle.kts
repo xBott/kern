@@ -12,7 +12,7 @@ val rootEnvVars = DotEnvBuilder.dotEnv {
 
 allprojects {
     project.group = "me.bottdev"
-    project.version = "0.0.6-SNAPSHOT"
+    project.version = "0.0.7-SNAPSHOT"
 
     repositories {
         mavenCentral()
