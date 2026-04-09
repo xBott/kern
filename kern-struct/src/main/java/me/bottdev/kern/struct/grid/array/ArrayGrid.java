@@ -1,7 +1,10 @@
 package me.bottdev.kern.struct.grid.array;
 
+import lombok.Getter;
 import me.bottdev.kern.struct.grid.Grid;
+import me.bottdev.kern.struct.grid.GridBuilder;
 import me.bottdev.kern.struct.grid.GridPosition;
+import me.bottdev.kern.struct.matrix.DoubleMatrix;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -9,21 +12,26 @@ import java.util.Set;
 
 public class ArrayGrid<T> implements Grid<T> {
 
+    protected double angle;
     protected final int width;
     protected final int height;
+
+    @Getter
     protected final T[][] data;
 
     @SuppressWarnings("unchecked")
-    public ArrayGrid(int width, int height) {
+    public ArrayGrid(int width, int height, double angle) {
         this.width = width;
         this.height = height;
+        this.angle = angle;
         this.data = (T[][]) new Object[height][width];
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayGrid(T[][] source) {
+    public ArrayGrid(T[][] source, double angle) {
         this.height = source.length;
         this.width  = source.length > 0 ? source[0].length : 0;
+        this.angle = angle;
         this.data   = (T[][]) new Object[height][width];
         for (int row = 0; row < height; row++) {
             System.arraycopy(source[row], 0, data[row], 0, width);
@@ -38,6 +46,11 @@ public class ArrayGrid<T> implements Grid<T> {
     @Override
     public int height() {
         return height;
+    }
+
+    @Override
+    public double angle() {
+        return angle;
     }
 
     @Override
@@ -93,7 +106,7 @@ public class ArrayGrid<T> implements Grid<T> {
             System.arraycopy(data[row], 0, copyData[row], 0, width);
         }
 
-        return new ArrayGrid<>(copyData);
+        return new ArrayGrid<>(copyData, angle);
 
     }
 
@@ -106,7 +119,7 @@ public class ArrayGrid<T> implements Grid<T> {
             System.arraycopy(data[row], 0, copyData[row], 0, width);
         }
 
-        return new MutableArrayGrid<>(copyData);
+        return new MutableArrayGrid<>(copyData, angle);
 
     }
 
@@ -121,6 +134,79 @@ public class ArrayGrid<T> implements Grid<T> {
             sb.append('\n');
         }
         return sb.toString();
+    }
+
+    @Override
+    public GridBuilder<T> rotate(double degrees) {
+
+        angle = (angle + degrees) % 360;
+
+        DoubleMatrix rotationMatrix = DoubleMatrix.getRotationMatrix(degrees);
+
+        double centerRow = (height - 1) / 2.0;
+        double centerColumn = (width - 1) / 2.0;
+
+        Grid<T> snapshot = immutableCopy();
+
+        double minRow = Double.MAX_VALUE;
+        double maxRow = Double.MIN_VALUE;
+        double minCol = Double.MAX_VALUE;
+        double maxCol = Double.MIN_VALUE;
+
+        for (int row = 0; row < snapshot.height(); row++) {
+            for (int col = 0; col < snapshot.width(); col++) {
+
+                if (snapshot.get(row, col) == null) continue;
+
+                double relRow = row - centerRow;
+                double relCol = col - centerColumn;
+
+                DoubleMatrix point = new DoubleMatrix(1, 2)
+                        .setRow(0, new Double[]{relRow, relCol});
+
+                DoubleMatrix rotated = point.multiply(rotationMatrix);
+
+                double r = rotated.get(0, 0);
+                double c = rotated.get(0, 1);
+
+                minRow = Math.min(minRow, r);
+                maxRow = Math.max(maxRow, r);
+                minCol = Math.min(minCol, c);
+                maxCol = Math.max(maxCol, c);
+            }
+        }
+
+        int newHeight = (int) Math.ceil(maxRow - minRow + 1);
+        int newWidth  = (int) Math.ceil(maxCol - minCol + 1);
+
+        ArrayGridBuilder<T> builder = new ArrayGridBuilder<T>(newWidth, newHeight);
+
+        double offsetRow = -minRow;
+        double offsetCol = -minCol;
+
+        for (int row = 0; row < snapshot.height(); row++) {
+            for (int col = 0; col < snapshot.width(); col++) {
+
+                T value = snapshot.get(row, col);
+                if (value == null) continue;
+
+                double relRow = row - centerRow;
+                double relCol = col - centerColumn;
+
+                DoubleMatrix point = new DoubleMatrix(1, 2)
+                        .setRow(0, new Double[]{relRow, relCol});
+
+                DoubleMatrix rotated = point.multiply(rotationMatrix);
+
+                int newRow = (int) Math.round(rotated.get(0, 0) + offsetRow);
+                int newCol = (int) Math.round(rotated.get(0, 1) + offsetCol);
+
+                builder.cell(newRow, newCol, value);
+
+            }
+        }
+
+        return builder;
     }
 
 }

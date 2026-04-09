@@ -1,5 +1,6 @@
 package me.bottdev.kern.struct.grid.array;
 
+import me.bottdev.kern.struct.grid.Grid;
 import me.bottdev.kern.struct.grid.GridFitResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,6 +137,23 @@ class MutableArrayGridTest {
     }
 
     @Test
+    void fit_placesValuesCorrectly_Not_Square() {
+        var other = new ArrayGridBuilder<Character>(1, 3)
+                .row(0, new Character[]{'A'})
+                .row(1, new Character[]{'A'})
+                .row(2, new Character[]{'A'})
+                .immutable();
+
+        grid.clear();
+        GridFitResult result = grid.fit(0, 0, other, false);
+
+        assertEquals(GridFitResult.FIT, result);
+        assertEquals('A', grid.get(0, 0));
+        assertEquals('A', grid.get(1, 0));
+        assertEquals('A', grid.get(2, 0));
+    }
+
+    @Test
     void fit_doesNotModifyGrid_whenOutOfBounds() {
         var other = new ArrayGridBuilder<Character>(3, 3)
                 .fill('X')
@@ -163,7 +181,7 @@ class MutableArrayGridTest {
 
     @Test
     void rotate90_movesValuesCorrectly() {
-        grid.rotate(90);
+        Grid<Character> rotated = grid.rotate(90).immutable();
 
         //. N . 00 01 02
         //W + E 10 11 12
@@ -173,33 +191,47 @@ class MutableArrayGridTest {
         //S + N 10 11 12
         //. E . 20 21 22
 
-        assertEquals('W', grid.get(0, 1));
-        assertEquals('S', grid.get(1, 0));
-        assertEquals('N', grid.get(1, 2));
-        assertEquals('E', grid.get(2, 1));
-        assertEquals('+', grid.get(1, 1));
+        assertEquals('W', rotated.get(0, 1));
+        assertEquals('S', rotated.get(1, 0));
+        assertEquals('N', rotated.get(1, 2));
+        assertEquals('E', rotated.get(2, 1));
+        assertEquals('+', rotated.get(1, 1));
+    }
+
+    @Test
+    void rotate90_changesBoundsCorrectly() {
+
+        Grid<Character> original = new ArrayGridBuilder<Character>(10, 5)
+                .fill('A')
+                .immutable();
+
+        Grid<Character> rotated = original.rotate(90).immutable();
+
+        assertEquals(5, rotated.width());
+        assertEquals(10, rotated.height());
+
     }
 
     @Test
     void rotate180_isSymmetric() {
-        grid.rotate(180);
+        Grid<Character> rotated = grid.rotate(180).immutable();
 
-        assertEquals('S', grid.get(0, 1));
-        assertEquals('N', grid.get(2, 1));
-        assertEquals('E', grid.get(1, 0));
-        assertEquals('W', grid.get(1, 2));
-        assertEquals('+', grid.get(1, 1));
+        assertEquals('S', rotated.get(0, 1));
+        assertEquals('N', rotated.get(2, 1));
+        assertEquals('E', rotated.get(1, 0));
+        assertEquals('W', rotated.get(1, 2));
+        assertEquals('+', rotated.get(1, 1));
     }
 
     @Test
     void rotate360_restoresOriginal() {
-        grid.rotate(360);
+        Grid<Character> rotated = grid.rotate(360).immutable();
 
-        assertEquals('N', grid.get(0, 1));
-        assertEquals('W', grid.get(1, 0));
-        assertEquals('+', grid.get(1, 1));
-        assertEquals('E', grid.get(1, 2));
-        assertEquals('S', grid.get(2, 1));
+        assertEquals('N', rotated.get(0, 1));
+        assertEquals('W', rotated.get(1, 0));
+        assertEquals('+', rotated.get(1, 1));
+        assertEquals('E', rotated.get(1, 2));
+        assertEquals('S', rotated.get(2, 1));
     }
 
     @Test

@@ -2,8 +2,6 @@ package me.bottdev.kern.struct.grid;
 
 public interface MutableGrid<T> extends Grid<T> {
 
-    double angle();
-
     void set(int row, int column, T value);
 
     void clear();
@@ -11,7 +9,5 @@ public interface MutableGrid<T> extends Grid<T> {
     GridFitResult canFit(int originRow, int originColumn, Grid<T> other, boolean override);
 
     GridFitResult fit(int originRow, int originColumn, Grid<T> other, boolean override);
-
-    void rotate(double degrees);
 
 }

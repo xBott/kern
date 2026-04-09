@@ -5,6 +5,8 @@ import java.util.Set;
 
 public interface Grid<T> {
 
+    double angle();
+
     int width();
     int height();
 
@@ -21,5 +23,7 @@ public interface Grid<T> {
     Grid<T> immutableCopy();
 
     MutableGrid<T> mutableCopy();
+
+    GridBuilder<T> rotate(double degrees);
 
 }

@@ -3,24 +3,15 @@ package me.bottdev.kern.struct.grid.array;
 import me.bottdev.kern.struct.grid.Grid;
 import me.bottdev.kern.struct.grid.GridFitResult;
 import me.bottdev.kern.struct.grid.MutableGrid;
-import me.bottdev.kern.struct.matrix.DoubleMatrix;
 
 public class MutableArrayGrid<T> extends ArrayGrid<T> implements MutableGrid<T> {
 
-    private double angle = 0;
-
-    public MutableArrayGrid(int width, int height) {
-        super(width, height);
+    public MutableArrayGrid(int width, int height, double angle) {
+        super(width, height, angle);
     }
 
-    public MutableArrayGrid(T[][] source) {
-        super(source);
-    }
-
-
-    @Override
-    public double angle() {
-        return angle;
+    public MutableArrayGrid(T[][] source, double angle) {
+        super(source, angle);
     }
 
     @Override
@@ -71,42 +62,5 @@ public class MutableArrayGrid<T> extends ArrayGrid<T> implements MutableGrid<T> 
         return GridFitResult.FIT;
     }
 
-    @Override
-    public void rotate(double degrees) {
-
-        angle = (angle + degrees) % 360;
-        DoubleMatrix rotationMatrix = DoubleMatrix.getRotationMatrix(degrees);
-
-        double centerRow = (height - 1) / 2.0;
-        double centerColumn = (width - 1) / 2.0;
-
-        Grid<T> snapshot = immutableCopy();
-
-        clear();
-
-        for (int row = 0; row < snapshot.height(); row++) {
-            for (int column = 0; column < snapshot.width(); column++) {
-
-                T value = snapshot.get(row, column);
-                if (value == null) continue;
-
-                double relativeRow = row - centerRow;
-                double relativeColumn = column - centerColumn;
-
-                DoubleMatrix point = new DoubleMatrix(1, 2)
-                        .setRow(0, new Double[]{relativeRow, relativeColumn});
-
-                DoubleMatrix rotated = point.multiply(rotationMatrix);
-
-                int newRow = (int) Math.round(rotated.get(0, 0) + centerRow);
-                int newColumn = (int) Math.round(rotated.get(0, 1) + centerColumn);
-
-                if (inBounds(newRow, newColumn)) {
-                    set(newRow, newColumn, value);
-                }
-
-            }
-        }
-    }
 
 }
