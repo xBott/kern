@@ -13,41 +13,41 @@ public class PrimMst {
             Graph<N, E> graph,
             GraphBuilder<N, E> mstBuilder
     ) {
+        if (graph.nodes().isEmpty()) return Optional.empty();
 
         Set<N> visited = new HashSet<>();
         PriorityQueue<E> prioritizedEdges = new PriorityQueue<>(Comparator.comparingDouble(Weighted::weight));
 
-        Optional<N> startNodeOptional = graph.nodes().stream().findFirst();
-        if (startNodeOptional.isEmpty()) return Optional.empty();
-        N startNode = startNodeOptional.get();
-
+        N startNode = graph.nodes().iterator().next();
         visited.add(startNode);
         prioritizedEdges.addAll(graph.outEdges(startNode));
 
         while (!prioritizedEdges.isEmpty()) {
-
             E edge = prioritizedEdges.poll();
 
             N nodeU = edge.nodeU();
             N nodeV = edge.nodeV();
 
             N next = visited.contains(nodeU) ? nodeV : nodeU;
+
             if (visited.contains(next)) continue;
 
-            visited.add(nodeV);
             mstBuilder.addEdge(edge);
-
-
             visited.add(next);
-            mstBuilder.addEdge(edge);
 
-            prioritizedEdges.addAll(graph.outEdges(next));
-
+            for (E e : graph.outEdges(next)) {
+                N target = e.nodeU().equals(next) ? e.nodeV() : e.nodeU();
+                if (!visited.contains(target)) {
+                    prioritizedEdges.add(e);
+                }
+            }
         }
 
-        Graph<N, E> mst = mstBuilder.immutable();
-        return Optional.of(mst);
+        if (visited.size() != graph.nodes().size()) {
+            return Optional.empty();
+        }
 
+        return Optional.of(mstBuilder.immutable());
     }
 
 }
