@@ -51,9 +51,20 @@ public class AdjacencyListGraph<N, E extends EndpointPair<N>> extends AbstractGr
 
     @Override
     public Set<E> incidentEdges(N node) {
-        Set<E> edges = adjacencyMap.get(node);
-        if (edges == null) return Set.of();
-        return Collections.unmodifiableSet(edges);
+        if (cachedIncident.containsKey(node)) {
+            return cachedIncident.get(node);
+        }
+
+        Set<E> incident = new HashSet<>();
+        for (E edge : edges()) {
+            if (edge.nodeU().equals(node) || edge.nodeV().equals(node)) {
+                incident.add(edge);
+            }
+        }
+
+        Set<E> immutableResult = Collections.unmodifiableSet(incident);
+        cachedIncident.put(node, immutableResult);
+        return immutableResult;
     }
 
 
