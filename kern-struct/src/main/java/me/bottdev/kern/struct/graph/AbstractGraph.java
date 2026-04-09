@@ -28,13 +28,13 @@ public abstract class AbstractGraph<N, E extends EndpointPair<N>> implements Gra
     @Override
     public Set<N> predecessors(N node) {
         return incidentEdges(node).stream()
-                .flatMap(edge -> {
-                    N adjacentNode = edge.adjacentNode(node);
-                    return edge.reachableFrom(adjacentNode).stream();
+                .filter(edge -> {
+                    N source = edge.adjacentNode(node);
+                    return edge.reachableFrom(source).filter(target -> target.equals(node)).isPresent();
                 })
+                .map(edge -> edge.adjacentNode(node))
                 .collect(Collectors.toUnmodifiableSet());
     }
-
     @Override
     public Set<N> adjacentNodes(N node) {
         return incidentEdges(node).stream()
