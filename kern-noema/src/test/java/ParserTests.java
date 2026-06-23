@@ -182,7 +182,6 @@ public class ParserTests {
         noemaParser.parse().ifSuccessOrElse(
                 tree -> {
                     PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
-
                 },
                 responses -> {
                     System.out.printf("Noema Parser returned %dx responses:\n", responses.size());

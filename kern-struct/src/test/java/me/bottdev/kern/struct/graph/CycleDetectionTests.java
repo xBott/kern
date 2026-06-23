@@ -33,11 +33,11 @@ public class CycleDetectionTests {
                 .addNode("Node3")
                 .addNode("Node4")
                 .addNode("Node5")
-                .addEdge(EndpointPair.directed("Node1", "Node2"))
-                .addEdge(EndpointPair.directed("Node2", "Node3"))
-                .addEdge(EndpointPair.directed("Node3", "Node4"))
-                .addEdge(EndpointPair.directed("Node4", "Node5"))
-                .addEdge(EndpointPair.directed("Node5", "Node1"))
+                .addEdge(EndpointPairs.directed("Node1", "Node2"))
+                .addEdge(EndpointPairs.directed("Node2", "Node3"))
+                .addEdge(EndpointPairs.directed("Node3", "Node4"))
+                .addEdge(EndpointPairs.directed("Node4", "Node5"))
+                .addEdge(EndpointPairs.directed("Node5", "Node1"))
                 .immutable();
 
         Assertions.assertNotNull(graph, "Graph should not be null");
@@ -72,11 +72,11 @@ public class CycleDetectionTests {
                 .addNode("Node3")
                 .addNode("Node4")
                 .addNode("Node5")
-                .addEdge(EndpointPair.directed("Node1", "Node2"))
-                .addEdge(EndpointPair.directed("Node2", "Node3"))
-                .addEdge(EndpointPair.directed("Node3", "Node4"))
-                .addEdge(EndpointPair.directed("Node4", "Node5"))
-                .addEdge(EndpointPair.directed("Node5", "Node1"))
+                .addEdge(EndpointPairs.directed("Node1", "Node2"))
+                .addEdge(EndpointPairs.directed("Node2", "Node3"))
+                .addEdge(EndpointPairs.directed("Node3", "Node4"))
+                .addEdge(EndpointPairs.directed("Node4", "Node5"))
+                .addEdge(EndpointPairs.directed("Node5", "Node1"))
                 .immutable();
 
         Assertions.assertNotNull(graph, "Graph should not be null");

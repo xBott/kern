@@ -3,6 +3,7 @@ package me.bottdev.kern.struct.graph;
 import me.bottdev.kern.struct.algorithms.shortestpath.Dijkstra;
 import me.bottdev.kern.struct.algorithms.shortestpath.DijkstraPath;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
+import me.bottdev.kern.struct.graph.endpoints.WeightedUndirected;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,9 +22,9 @@ public class DijkstraTest {
         dijkstra = new Dijkstra();
     }
 
-    private Graph<String, EndpointPair.WeightedUndirected<String>> buildWeightedGraph() {
+    private Graph<String, WeightedUndirected<String>> buildWeightedGraph() {
 
-        return new AdjacencyListGraphBuilder<String, EndpointPair.WeightedUndirected<String>>()
+        return new AdjacencyListGraphBuilder<String, WeightedUndirected<String>>()
                 .addNode("Node1")
                 .addNode("Node2")
                 .addNode("Node3")
@@ -34,20 +35,20 @@ public class DijkstraTest {
                 .addNode("Node8")
                 .addNode("Node9")
                 .addNode("Node10")
-                .addEdge(EndpointPair.undirected("Node1", "Node2", 10))
-                .addEdge(EndpointPair.undirected("Node1", "Node3", 8))
-                .addEdge(EndpointPair.undirected("Node2", "Node3", 3))
-                .addEdge(EndpointPair.undirected("Node2", "Node5", 4))
-                .addEdge(EndpointPair.undirected("Node3", "Node5", 2))
-                .addEdge(EndpointPair.undirected("Node3", "Node4", 3))
-                .addEdge(EndpointPair.undirected("Node3", "Node6", 1))
-                .addEdge(EndpointPair.undirected("Node4", "Node7", 10))
-                .addEdge(EndpointPair.undirected("Node5", "Node8", 2))
-                .addEdge(EndpointPair.undirected("Node6", "Node7", 3))
-                .addEdge(EndpointPair.undirected("Node6", "Node8", 5))
-                .addEdge(EndpointPair.undirected("Node6", "Node10", 1))
-                .addEdge(EndpointPair.undirected("Node8", "Node9", 2))
-                .addEdge(EndpointPair.undirected("Node9", "Node10", 3))
+                .addEdge(EndpointPairs.weightedUndirected("Node1", "Node2", 10))
+                .addEdge(EndpointPairs.weightedUndirected("Node1", "Node3", 8))
+                .addEdge(EndpointPairs.weightedUndirected("Node2", "Node3", 3))
+                .addEdge(EndpointPairs.weightedUndirected("Node2", "Node5", 4))
+                .addEdge(EndpointPairs.weightedUndirected("Node3", "Node5", 2))
+                .addEdge(EndpointPairs.weightedUndirected("Node3", "Node4", 3))
+                .addEdge(EndpointPairs.weightedUndirected("Node3", "Node6", 1))
+                .addEdge(EndpointPairs.weightedUndirected("Node4", "Node7", 10))
+                .addEdge(EndpointPairs.weightedUndirected("Node5", "Node8", 2))
+                .addEdge(EndpointPairs.weightedUndirected("Node6", "Node7", 3))
+                .addEdge(EndpointPairs.weightedUndirected("Node6", "Node8", 5))
+                .addEdge(EndpointPairs.weightedUndirected("Node6", "Node10", 1))
+                .addEdge(EndpointPairs.weightedUndirected("Node8", "Node9", 2))
+                .addEdge(EndpointPairs.weightedUndirected("Node9", "Node10", 3))
                 .immutable();
     }
 
@@ -92,7 +93,7 @@ public class DijkstraTest {
 
         System.out.printf("Test dijkstra case from %s to %s: %n", start, end);
 
-        Graph<String, EndpointPair.WeightedUndirected<String>> graph = buildWeightedGraph();
+        Graph<String, WeightedUndirected<String>> graph = buildWeightedGraph();
 
         GraphPathAdapter<String> adapter = new GraphPathAdapter<>(graph);
 

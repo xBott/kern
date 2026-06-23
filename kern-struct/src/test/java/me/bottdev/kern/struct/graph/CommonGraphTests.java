@@ -33,8 +33,8 @@ public class CommonGraphTests {
                 .addNode("Node1")
                 .addNode("Node2")
                 .addNode("Node3")
-                .addEdge(EndpointPair.directed("Node1", "Node3"))
-                .addEdge(EndpointPair.directed("Node3", "Node2"))
+                .addEdge(EndpointPairs.directed("Node1", "Node3"))
+                .addEdge(EndpointPairs.directed("Node3", "Node2"))
                 .immutable();
 
         Assertions.assertNotNull(graph, "Graph should not be null");
@@ -57,15 +57,15 @@ public class CommonGraphTests {
                 .addNode("Node1")
                 .addNode("Node2")
                 .addNode("Node3")
-                .addEdge(EndpointPair.directed("Node1", "Node3"))
-                .addEdge(EndpointPair.directed("Node3", "Node2"))
+                .addEdge(EndpointPairs.directed("Node1", "Node3"))
+                .addEdge(EndpointPairs.directed("Node3", "Node2"))
                 .mutable();
 
         graph.addNode("Node4");
         graph.addNode("Node5");
-        graph.addEdge(EndpointPair.directed("Node1", "Node4"));
-        graph.addEdge(EndpointPair.directed("Node4", "Node2"));
-        graph.addEdge(EndpointPair.directed("Node4", "Node5"));
+        graph.addEdge(EndpointPairs.directed("Node1", "Node4"));
+        graph.addEdge(EndpointPairs.directed("Node4", "Node2"));
+        graph.addEdge(EndpointPairs.directed("Node4", "Node5"));
 
         Assertions.assertNotNull(graph, "Graph should not be null");
         Assertions.assertEquals(5, graph.nodeCount(), "Graph should have 5 nodes");
@@ -82,8 +82,8 @@ public class CommonGraphTests {
     public void testNodeDegrees_ShouldReturnCorrectCount() {
 
         MutableGraph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
-                .addEdge(EndpointPair.directed("A", "B"))
-                .addEdge(EndpointPair.directed("A", "C"))
+                .addEdge(EndpointPairs.directed("A", "B"))
+                .addEdge(EndpointPairs.directed("A", "C"))
                 .mutable();
 
         int outDegreeA = graph.outDegree("A");
@@ -99,8 +99,8 @@ public class CommonGraphTests {
     public void testNodeDegrees_ShouldReturnCorrectDegrees() {
 
         MutableGraph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
-                .addEdge(EndpointPair.directed("A", "B"))
-                .addEdge(EndpointPair.directed("B", "C"))
+                .addEdge(EndpointPairs.directed("A", "B"))
+                .addEdge(EndpointPairs.directed("B", "C"))
                 .mutable();
 
         int inDegreeA = graph.inDegree("A");
@@ -124,7 +124,7 @@ public class CommonGraphTests {
     public void testSuccessorsAndPredecessors_ShouldIdentifyCorrectNodes() {
 
         Graph<String, EndpointPair<String>> graph = new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
-                .addEdge(EndpointPair.directed("X", "Y"))
+                .addEdge(EndpointPairs.directed("X", "Y"))
                 .immutable();
 
         Set<String> successorsX = graph.successors("X");

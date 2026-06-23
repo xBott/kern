@@ -170,7 +170,6 @@ public class RecursiveNoemaParser implements NoemaParser {
 
         Token next = tokenStream.lookahead(0);
 
-        AtomicInteger index = new AtomicInteger();
         while (next != null && next.tokenType() != TokenType.LIST_END) {
 
             parseElement().ifSuccessOrElse(

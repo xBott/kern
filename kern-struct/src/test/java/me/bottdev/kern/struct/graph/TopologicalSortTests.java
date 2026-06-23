@@ -71,11 +71,11 @@ class TopologicalSortTests {
                         .addNode("Node3")
                         .addNode("Node4")
                         .addNode("Node5")
-                        .addEdge(EndpointPair.directed("Node1", "Node3"))
-                        .addEdge(EndpointPair.directed("Node1", "Node2"))
-                        .addEdge(EndpointPair.directed("Node3", "Node4"))
-                        .addEdge(EndpointPair.directed("Node2", "Node4"))
-                        .addEdge(EndpointPair.directed("Node4", "Node5"))
+                        .addEdge(EndpointPairs.directed("Node1", "Node3"))
+                        .addEdge(EndpointPairs.directed("Node1", "Node2"))
+                        .addEdge(EndpointPairs.directed("Node3", "Node4"))
+                        .addEdge(EndpointPairs.directed("Node2", "Node4"))
+                        .addEdge(EndpointPairs.directed("Node4", "Node5"))
                         .immutable();
 
         Graph<String, EndpointPair<String>> g2 =
@@ -84,9 +84,9 @@ class TopologicalSortTests {
                         .addNode("B")
                         .addNode("C")
                         .addNode("D")
-                        .addEdge(EndpointPair.directed("A", "C"))
-                        .addEdge(EndpointPair.directed("B", "C"))
-                        .addEdge(EndpointPair.directed("C", "D"))
+                        .addEdge(EndpointPairs.directed("A", "C"))
+                        .addEdge(EndpointPairs.directed("B", "C"))
+                        .addEdge(EndpointPairs.directed("C", "D"))
                         .immutable();
 
         Graph<String, EndpointPair<String>> g3 =
@@ -94,9 +94,9 @@ class TopologicalSortTests {
                         .addNode("X")
                         .addNode("Y")
                         .addNode("Z")
-                        .addEdge(EndpointPair.directed("X", "Y"))
-                        .addEdge(EndpointPair.directed("Y", "Z"))
-                        .addEdge(EndpointPair.directed("Z", "X")) // cycle
+                        .addEdge(EndpointPairs.directed("X", "Y"))
+                        .addEdge(EndpointPairs.directed("Y", "Z"))
+                        .addEdge(EndpointPairs.directed("Z", "X")) // cycle
                         .immutable();
 
         Graph<String, EndpointPair<String>> g4 =
@@ -111,17 +111,17 @@ class TopologicalSortTests {
                         .addNode("N8")
                         .addNode("N9")
                         .addNode("N10")
-                        .addEdge(EndpointPair.directed("N1", "N2"))
-                        .addEdge(EndpointPair.directed("N1", "N3"))
-                        .addEdge(EndpointPair.directed("N2", "N4"))
-                        .addEdge(EndpointPair.directed("N2", "N5"))
-                        .addEdge(EndpointPair.directed("N3", "N6"))
-                        .addEdge(EndpointPair.directed("N4", "N7"))
-                        .addEdge(EndpointPair.directed("N5", "N7"))
-                        .addEdge(EndpointPair.directed("N6", "N8"))
-                        .addEdge(EndpointPair.directed("N7", "N9"))
-                        .addEdge(EndpointPair.directed("N8", "N9"))
-                        .addEdge(EndpointPair.directed("N9", "N10"))
+                        .addEdge(EndpointPairs.directed("N1", "N2"))
+                        .addEdge(EndpointPairs.directed("N1", "N3"))
+                        .addEdge(EndpointPairs.directed("N2", "N4"))
+                        .addEdge(EndpointPairs.directed("N2", "N5"))
+                        .addEdge(EndpointPairs.directed("N3", "N6"))
+                        .addEdge(EndpointPairs.directed("N4", "N7"))
+                        .addEdge(EndpointPairs.directed("N5", "N7"))
+                        .addEdge(EndpointPairs.directed("N6", "N8"))
+                        .addEdge(EndpointPairs.directed("N7", "N9"))
+                        .addEdge(EndpointPairs.directed("N8", "N9"))
+                        .addEdge(EndpointPairs.directed("N9", "N10"))
                         .immutable();
 
         return Stream.of(

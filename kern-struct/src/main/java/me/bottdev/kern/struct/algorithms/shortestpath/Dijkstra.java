@@ -15,7 +15,7 @@ public class Dijkstra {
         return buildResult(state, start, target);
     }
 
-    private <N, T extends PathStructure<N>> DijkstraState<N> initialize(N start) {
+    private <N> DijkstraState<N> initialize(N start) {
 
         DijkstraState<N> state = DijkstraState.empty();
         state.updateDistance(start, 0.0);
