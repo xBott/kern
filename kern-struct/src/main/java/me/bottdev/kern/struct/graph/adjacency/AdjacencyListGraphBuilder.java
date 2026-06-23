@@ -49,18 +49,21 @@ public class AdjacencyListGraphBuilder<N, E extends EndpointPair<N>> implements 
     }
 
     @Override
-    public <P> void property(Property<P> property, P value) {
+    public <P> AdjacencyListGraphBuilder<N, E> property(Property<P> property, P value) {
         propertyStore.put(property, value);
+        return this;
     }
 
     @Override
-    public void allowsSelfLoops(boolean allowsSelfLoops) {
+    public AdjacencyListGraphBuilder<N, E> allowsSelfLoops(boolean allowsSelfLoops) {
         propertyStore.put(GraphProperties.ALLOWS_SELF_LOOPS, allowsSelfLoops);
+        return this;
     }
 
     @Override
-    public void allowsParallelEdges(boolean allowsParallelEdges) {
+    public AdjacencyListGraphBuilder<N, E> allowsParallelEdges(boolean allowsParallelEdges) {
         propertyStore.put(GraphProperties.ALLOWS_PARALLEL_EDGES, allowsParallelEdges);
+        return this;
     }
 
     @Override
