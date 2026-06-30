@@ -1,94 +1,93 @@
 package me.bottdev.kern.struct.algorithms.traverse.orders;
 
-import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.Graph;
+import me.bottdev.kern.struct.NeighborProvider;
+import me.bottdev.kern.struct.algorithms.traverse.TraversalIterator;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalOrder;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalStep;
 
 import java.util.*;
 
-public class BfsTraversalOrder<N, E extends EndpointPair<N>> implements TraversalOrder<N, E> {
+public class BfsTraversalOrder implements TraversalOrder {
 
     @Override
-    public Iterator<TraversalStep<N, E>> createIterator(Graph<N, E> graph, N start, boolean allowDuplicates) {
-        return new DfsIterator<>(graph, start, allowDuplicates);
+    public <N, T extends NeighborProvider<N>> TraversalIterator<N, T> createIterator(
+            T structure,
+            N start,
+            boolean allowDuplicates
+    ) {
+        return new BfsIterator<>(structure, start, allowDuplicates);
     }
 
-    private static class DfsIterator<N, E extends EndpointPair<N>> implements Iterator<TraversalStep<N, E>> {
+    private static class BfsIterator<N, T extends NeighborProvider<N>> implements TraversalIterator<N, T> {
 
-        private final Graph<N, E> graph;
+        private final T structure;
         private final boolean allowDuplicates;
+
         private final Queue<BfsStep> queue = new ArrayDeque<>();
         private final Set<N> discovered = new HashSet<>();
         private final Set<N> visited = new HashSet<>();
+
         private boolean stopped = false;
 
-        DfsIterator(Graph<N, E> graph, N start, boolean allowDuplicates) {
-            this.graph = graph;
+        BfsIterator(T structure, N start, boolean allowDuplicates) {
+            this.structure = structure;
             this.allowDuplicates = allowDuplicates;
-            enqueue(start, null, null, 0);
+            enqueue(start, null, 0);
         }
 
         @Override
         public boolean hasNext() {
-            return !stopped && !queue.isEmpty();
+            if (stopped) return false;
+            return !queue.isEmpty();
         }
 
         @Override
         public BfsStep next() {
-
             if (!hasNext()) throw new NoSuchElementException();
 
-            BfsStep step = queue.poll();
-            visited.add(step.node());
+            BfsStep current = queue.poll();
+            visited.add(current.node);
 
-            graph.outEdges(step.node()).forEach(edge ->
-                    edge.reachableFrom(step.node()).ifPresent(neighbor -> {
+            pushChildren(current);
 
-                        if (allowDuplicates || discovered.add(neighbor)) {
-                            enqueue(
-                                    neighbor,
-                                    step.node(),
-                                    edge,
-                                    step.depth + 1
-                            );
-                        }
-
-                    })
-            );
-
-            return step;
+            return current;
         }
 
-        private void enqueue(N node, N parent, E parentEdge, int depth) {
-            if (visited.add(node)) {
-                queue.add(new BfsStep(node, parent, parentEdge, depth));
+        private void pushChildren(BfsStep step) {
+            N parent = step.node();
+            for (N neighbor : structure.neighbors(parent)) {
+                if (allowDuplicates || discovered.add(neighbor)) {
+                    enqueue(neighbor, parent, step.depth() + 1);
+                }
             }
         }
 
-        private class BfsStep implements TraversalStep<N, E> {
+        private void enqueue(N node, N parent, int depth) {
+            discovered.add(node);
+            queue.add(new BfsStep(node, parent, depth));
+        }
+
+        private class BfsStep implements TraversalStep<N, T> {
 
             private final N node;
             private final N parent;
-            private final E parentEdge;
             private final int depth;
             private Set<N> visitedView;
 
-            BfsStep(N node, N parent, E parentEdge, int depth) {
-                this.node       = node;
-                this.parent     = parent;
-                this.parentEdge = parentEdge;
-                this.depth      = depth;
+            BfsStep(N node, N parent, int depth) {
+                this.node   = node;
+                this.parent = parent;
+                this.depth  = depth;
             }
 
             @Override
             public N node() { return node; }
+
             @Override
             public int depth() { return depth; }
+
             @Override
             public Optional<N> parent() { return Optional.ofNullable(parent); }
-            @Override
-            public Optional<E> parentEdge() { return Optional.ofNullable(parentEdge); }
 
             @Override
             public Set<N> visited() {
@@ -99,16 +98,13 @@ public class BfsTraversalOrder<N, E extends EndpointPair<N>> implements Traversa
             }
 
             @Override
-            public Graph<N, E> graph() { return graph; }
+            public T structure() { return structure; }
 
             @Override
             public void stop() {
-                BfsTraversalOrder.DfsIterator.this.stopped = true;
+                BfsIterator.this.stopped = true;
                 queue.clear();
             }
-
         }
-
     }
-
 }

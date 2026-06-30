@@ -1,35 +1,40 @@
 package me.bottdev.kern.struct.algorithms.traverse.orders;
 
-import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.Graph;
+import me.bottdev.kern.struct.NeighborProvider;
+import me.bottdev.kern.struct.algorithms.traverse.TraversalIterator;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalOrder;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalStep;
 
 import java.util.*;
 
-public class DfsTraversalOrder<N, E extends EndpointPair<N>> implements TraversalOrder<N, E> {
+public class DfsTraversalOrder implements TraversalOrder {
 
     @Override
-    public Iterator<TraversalStep<N, E>> createIterator(Graph<N, E> graph, N start, boolean allowDuplicates) {
-        return new DfsIterator<>(graph, start, allowDuplicates);
+    public <N, T extends NeighborProvider<N>> TraversalIterator<N, T> createIterator(
+            T structure,
+            N start,
+            boolean allowDuplicates
+    ) {
+        return new DfsIterator<>(structure, start, allowDuplicates);
     }
 
-    private static class DfsIterator<N, E extends EndpointPair<N>> implements Iterator<TraversalStep<N, E>> {
+    private static class DfsIterator<N, T extends NeighborProvider<N>> implements TraversalIterator<N, T> {
 
-        private final Graph<N, E> graph;
+        private final T structure;
         private final boolean allowDuplicates;
+
         private final Deque<DfsStep> stack = new ArrayDeque<>();
         private final Set<N> discovered = new HashSet<>();
         private final Set<N> visited = new HashSet<>();
 
-
         private boolean skipChildren = false;
         private boolean stopped = false;
 
-        DfsIterator(Graph<N, E> graph, N start, boolean allowDuplicates) {
-            this.graph = graph;
+        DfsIterator(T structure, N start, boolean allowDuplicates) {
+            this.structure = structure;
             this.allowDuplicates = allowDuplicates;
-            stack.push(new DfsStep(start, null, null, 0));
+
+            stack.push(new DfsStep(start, null, 0));
             discovered.add(start);
         }
 
@@ -40,7 +45,7 @@ public class DfsTraversalOrder<N, E extends EndpointPair<N>> implements Traversa
         }
 
         @Override
-        public TraversalStep<N, E> next() {
+        public DfsStep next() {
             if (!hasNext()) throw new NoSuchElementException();
 
             DfsStep current = stack.pop();
@@ -55,55 +60,53 @@ public class DfsTraversalOrder<N, E extends EndpointPair<N>> implements Traversa
 
         }
 
-        private void pushChildren(DfsStep parent) {
+        private void pushChildren(DfsStep step) {
 
-            List<E> edges = new ArrayList<>(graph.outEdges(parent.node()));
+            N parent = step.node();
 
-            for (int i = edges.size() - 1; i >= 0; i--) {
+            for (N neighbor : structure.neighbors(parent)) {
 
-                E edge = edges.get(i);
+                if (allowDuplicates || discovered.add(neighbor)) {
 
-                edge.reachableFrom(parent.node()).ifPresent(neighbor -> {
+                    DfsStep nextStep = new DfsStep(
+                            neighbor,
+                            parent,
+                            step.depth() + 1
+                    );
+                    stack.push(nextStep);
 
-                    if (allowDuplicates || discovered.add(neighbor)) {
-                        stack.push(new DfsStep(
-                                neighbor,
-                                parent.node(),
-                                edge,
-                                parent.depth() + 1
-                        ));
-                    }
-
-                });
+                }
 
             }
 
         }
 
-        private class DfsStep implements TraversalStep<N, E> {
+        public class DfsStep implements TraversalStep<N, T> {
 
             private final N node;
             private final N parent;
-            private final E parentEdge;
             private final int depth;
 
             private Set<N> visitedView;
 
-            DfsStep(N node, N parent, E parentEdge, int depth) {
-                this.node       = node;
+            DfsStep(
+                    N node,
+                    N parent,
+                    int depth
+            ) {
+                this.node = node;
                 this.parent     = parent;
-                this.parentEdge = parentEdge;
                 this.depth      = depth;
             }
 
             @Override
             public N node() { return node; }
+
             @Override
             public int depth() { return depth; }
+
             @Override
             public Optional<N> parent() { return Optional.ofNullable(parent); }
-            @Override
-            public Optional<E> parentEdge() { return Optional.ofNullable(parentEdge); }
 
             @Override
             public Set<N> visited() {
@@ -114,7 +117,7 @@ public class DfsTraversalOrder<N, E extends EndpointPair<N>> implements Traversa
             }
 
             @Override
-            public Graph<N, E> graph() { return graph; }
+            public T structure() { return structure; }
 
             public void skipSubtree() {
                 DfsIterator.this.skipChildren = true;

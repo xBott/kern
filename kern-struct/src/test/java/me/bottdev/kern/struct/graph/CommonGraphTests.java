@@ -1,28 +1,14 @@
 package me.bottdev.kern.struct.graph;
 
+import me.bottdev.kern.struct.algorithms.traverse.TraversalStep;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
-import me.bottdev.kern.struct.algorithms.traverse.GraphTraversal;
-import me.bottdev.kern.struct.algorithms.traverse.TraversalOrders;
+import me.bottdev.kern.struct.algorithms.traverse.Traversals;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 public class CommonGraphTests {
-
-    private static GraphTraversal<String, EndpointPair<String>> dfs;
-    private static GraphTraversal<String, EndpointPair<String>> bfs;
-
-    @BeforeAll
-    public static void setup() {
-        dfs = new GraphTraversal<String, EndpointPair<String>>()
-                .order(TraversalOrders.dfs());
-
-        bfs = new GraphTraversal<String, EndpointPair<String>>()
-                .order(TraversalOrders.bfs());
-
-    }
 
     @Test
     public void testGraphCreation_AdjacencyList_Immutable() {
@@ -41,10 +27,11 @@ public class CommonGraphTests {
         Assertions.assertEquals(3, graph.nodeCount(), "Graph should have 3 nodes");
         Assertions.assertEquals(2, graph.edgeCount(), "Graph should have 2 edges");
 
-        dfs.stream(graph, "Node1")
-                .forEach(step -> {
-                    System.out.println(step.node());
-                });
+        Traversals.dfsPreOrder()
+                .on(graph)
+                .from("Node1")
+                .stream()
+                .forEach(step -> System.out.println(step.node()));
 
     }
 
@@ -71,11 +58,12 @@ public class CommonGraphTests {
         Assertions.assertEquals(5, graph.nodeCount(), "Graph should have 5 nodes");
         Assertions.assertEquals(5, graph.edgeCount(), "Graph should have 5 edges");
 
-        bfs.stream(graph, "Node1")
-                .forEach(step -> {
-                    System.out.println(step.node());
-                });
-
+        Traversals.bfs()
+                .on(graph)
+                .from("Node1")
+                .stream()
+                .map(TraversalStep::node)
+                .forEach(System.out::println);
     }
 
     @Test

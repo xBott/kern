@@ -3,18 +3,18 @@ package me.bottdev.kern.struct.algorithms.toposort;
 import lombok.RequiredArgsConstructor;
 import me.bottdev.kern.commons.Result;
 import me.bottdev.kern.struct.algorithms.cycle.CycleDetector;
-import me.bottdev.kern.struct.algorithms.cycle.CycleResult;
+import me.bottdev.kern.struct.algorithms.cycle.CyclePath;
 import me.bottdev.kern.struct.graph.EndpointPair;
 import me.bottdev.kern.struct.graph.Graph;
 
 import java.util.*;
 
 @RequiredArgsConstructor
-public class TopologicalSort<N> {
+public class TopologicalSort {
 
-    private final CycleDetector<N> cycleDetector;
+    private final CycleDetector cycleDetector;
 
-    public Result<List<N>, CycleResult<N>> sort(Graph<N, ? extends EndpointPair<N>> graph) {
+    public <N> Result<List<N>, CyclePath<N>> sort(Graph<N, ? extends EndpointPair<N>> graph) {
 
         int size = graph.nodeCount();
 
@@ -44,8 +44,8 @@ public class TopologicalSort<N> {
         }
 
         if (sortedNodes.size() != size) {
-            CycleResult<N> cycleResult = cycleDetector.detectAll(graph);
-            return Result.err(cycleResult);
+            Optional<CyclePath<N>> cycleOptional = cycleDetector.detect(graph);
+            if (cycleOptional.isPresent()) return Result.err(cycleOptional.get());
 
         }
 

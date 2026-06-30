@@ -15,12 +15,12 @@ import java.util.stream.Stream;
 
 class TopologicalSortTests {
 
-    private static TopologicalSort<String> topologicalSort;
+    private static TopologicalSort topologicalSort;
 
     @BeforeAll
     static void setUp() {
-        CycleDetector<String> cycleDetector = new SimpleCycleDetector<>();
-        topologicalSort = new TopologicalSort<>(cycleDetector);
+        CycleDetector cycleDetector = new SimpleCycleDetector();
+        topologicalSort = new TopologicalSort(cycleDetector);
     }
 
     @ParameterizedTest

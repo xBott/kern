@@ -5,10 +5,8 @@ import me.bottdev.kern.struct.graph.Graph;
 
 import java.util.*;
 
-public interface CycleDetector<N> {
+public interface CycleDetector {
 
-    <E extends EndpointPair<N>> Optional<CyclePath<N>> detectFirst(Graph<N, E> graph);
-
-    <E extends EndpointPair<N>> CycleResult<N> detectAll(Graph<N, E> graph);
+    <N, E extends EndpointPair<N>> Optional<CyclePath<N>> detect(Graph<N, E> graph);
 
 }

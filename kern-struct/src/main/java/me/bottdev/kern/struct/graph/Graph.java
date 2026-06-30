@@ -1,12 +1,13 @@
 package me.bottdev.kern.struct.graph;
 
+import me.bottdev.kern.struct.NeighborProvider;
 import me.bottdev.kern.struct.property.PropertyHolder;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface Graph<N, E extends EndpointPair<N>> extends PropertyHolder {
+public interface Graph<N, E extends EndpointPair<N>> extends PropertyHolder, NeighborProvider<N> {
 
     Set<N> nodes();
     Set<E> edges();
@@ -46,6 +47,11 @@ public interface Graph<N, E extends EndpointPair<N>> extends PropertyHolder {
 
     default boolean allowsSelfLoops() {
         return getProperty(GraphProperties.ALLOWS_SELF_LOOPS);
+    }
+
+    @Override
+    default Iterable<N> neighbors(N node) {
+        return successors(node);
     }
 
 }

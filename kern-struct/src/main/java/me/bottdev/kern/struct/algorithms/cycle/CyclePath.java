@@ -1,5 +1,6 @@
 package me.bottdev.kern.struct.algorithms.cycle;
 
+import lombok.NonNull;
 import me.bottdev.kern.struct.PathResult;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public record CyclePath<N>(
         return node;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return nodes.stream().map(N::toString).collect(Collectors.joining(" -> ")) + " ---> " + node;
