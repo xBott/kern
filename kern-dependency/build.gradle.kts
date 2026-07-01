@@ -1,20 +1,18 @@
-plugins {
-    id("java")
-}
-
-group = "me.bottdev"
-version = "0.0.14-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+    implementation(project(":kern-commons"))
+    implementation(project(":kern-struct"))
 
-tasks.test {
-    useJUnitPlatform()
+    implementation(libs.guava)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit.jupiter)
+
+    testImplementation(libs.assertj.core)
+
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
 }
