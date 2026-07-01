@@ -1,7 +1,7 @@
 package me.bottdev.kern.struct.graph;
 
-import me.bottdev.kern.struct.algorithms.shortestpath.Dijkstra;
-import me.bottdev.kern.struct.algorithms.shortestpath.DijkstraPath;
+import me.bottdev.kern.struct.Path;
+import me.bottdev.kern.struct.algorithms.shortestpath.DijkstraPathFinder;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
 import me.bottdev.kern.struct.graph.endpoints.WeightedUndirected;
 import org.junit.jupiter.api.Assertions;
@@ -13,13 +13,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DijkstraTest {
+public class DijkstraPathFinderTest {
 
-    private static Dijkstra dijkstra;
+    private static DijkstraPathFinder dijkstra;
 
     @BeforeAll
     static void setUp() {
-        dijkstra = new Dijkstra();
+        dijkstra = new DijkstraPathFinder();
     }
 
     private Graph<String, WeightedUndirected<String>> buildWeightedGraph() {
@@ -97,7 +97,7 @@ public class DijkstraTest {
 
         GraphPathAdapter<String> adapter = new GraphPathAdapter<>(graph);
 
-        DijkstraPath<String> path = dijkstra.shortestPath(adapter, start, end);
+        Path<String> path = dijkstra.find(adapter, start, end);
 
         Assertions.assertNotNull(path, "Shortest path should not be null");
         Assertions.assertEquals(expectedPath, path.nodes(), "Shortest path should be equal to expected");
