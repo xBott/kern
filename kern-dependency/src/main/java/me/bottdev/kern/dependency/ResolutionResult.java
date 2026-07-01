@@ -1,8 +1,5 @@
 package me.bottdev.kern.dependency;
 
-import me.bottdev.kern.struct.algorithms.sort.TopologicalSortResult;
-
-import java.util.ArrayList;
 import java.util.List;
 
 ///The result of a successful dependency resolution. Immutable.
