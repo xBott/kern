@@ -10,3 +10,4 @@ rootProject.name = "kern"
 include("kern-noema")
 include("kern-struct")
 include("kern-commons")
+include("kern-dependency")
