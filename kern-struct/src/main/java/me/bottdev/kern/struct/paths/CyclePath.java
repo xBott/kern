@@ -1,7 +1,7 @@
-package me.bottdev.kern.struct.algorithms.cycle;
+package me.bottdev.kern.struct.paths;
 
 import lombok.NonNull;
-import me.bottdev.kern.struct.PathResult;
+import me.bottdev.kern.struct.Path;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public record CyclePath<N>(
         N node,
         List<N> nodes
-) implements PathResult<N> {
+) implements Path<N> {
 
     @Override
     public N start() {

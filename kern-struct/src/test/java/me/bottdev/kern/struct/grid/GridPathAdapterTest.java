@@ -1,6 +1,6 @@
 package me.bottdev.kern.struct.grid;
 
-import me.bottdev.kern.struct.algorithms.shortestpath.Dijkstra;
+import me.bottdev.kern.struct.algorithms.shortestpath.DijkstraPathFinder;
 import me.bottdev.kern.struct.grid.array.ArrayGridBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GridPathAdapterTest {
 
     private Grid<Character> grid;
-    private Dijkstra dijkstra = new Dijkstra();
+    private DijkstraPathFinder dijkstra = new DijkstraPathFinder();
 
     @BeforeEach
     void setUp() {

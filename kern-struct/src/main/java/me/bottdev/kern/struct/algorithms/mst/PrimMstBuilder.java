@@ -7,8 +7,9 @@ import me.bottdev.kern.struct.graph.Weighted;
 
 import java.util.*;
 
-public class PrimMst {
+public class PrimMstBuilder implements MstBuilder {
 
+    @Override
     public <N, E extends EndpointPair<N> & Weighted> Optional<Graph<N, E>> apply(
             Graph<N, E> graph,
             GraphBuilder<N, E> mstBuilder

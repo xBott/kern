@@ -1,9 +1,6 @@
 package me.bottdev.kern.struct.graph.adjacency;
 
-import me.bottdev.kern.struct.graph.EndpointPair;
-import me.bottdev.kern.struct.graph.GraphBuilder;
-import me.bottdev.kern.struct.graph.GraphProperties;
-import me.bottdev.kern.struct.graph.MutableGraph;
+import me.bottdev.kern.struct.graph.*;
 import me.bottdev.kern.struct.property.Property;
 import me.bottdev.kern.struct.property.PropertyStore;
 
@@ -12,7 +9,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AdjacencyListGraphBuilder<N, E extends EndpointPair<N>> implements GraphBuilder<N, E> {
+public class AdjacencyListGraphBuilder<N, E extends EndpointPair<N>>
+        implements GraphBuilder<N, E>, MutableGraphBuilder<N, E>
+{
 
     private final Set<N> nodes = new HashSet<>();
     private final Set<E> edges = new HashSet<>();

@@ -14,6 +14,4 @@ public interface GraphBuilder<N, E extends EndpointPair<N>> {
 
     Graph<N, E> immutable();
 
-    MutableGraph<N, E> mutable();
-
 }

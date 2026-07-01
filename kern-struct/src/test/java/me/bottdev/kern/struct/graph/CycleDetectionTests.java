@@ -1,6 +1,6 @@
 package me.bottdev.kern.struct.graph;
 
-import me.bottdev.kern.struct.algorithms.cycle.CyclePath;
+import me.bottdev.kern.struct.paths.CyclePath;
 import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
 import org.junit.jupiter.api.Assertions;

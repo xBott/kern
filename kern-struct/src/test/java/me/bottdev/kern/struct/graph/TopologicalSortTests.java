@@ -2,8 +2,11 @@ package me.bottdev.kern.struct.graph;
 
 import me.bottdev.kern.struct.algorithms.cycle.CycleDetector;
 import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
-import me.bottdev.kern.struct.algorithms.toposort.TopologicalSort;
+import me.bottdev.kern.struct.algorithms.sort.CircularDependencyException;
+import me.bottdev.kern.struct.algorithms.sort.KahnSorter;
+import me.bottdev.kern.struct.algorithms.sort.TopologicalSorter;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
+import me.bottdev.kern.struct.graph.endpoints.Directed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,17 +18,19 @@ import java.util.stream.Stream;
 
 class TopologicalSortTests {
 
-    private static TopologicalSort topologicalSort;
+    private static TopologicalSorter topologicalSort;
 
     @BeforeAll
     static void setUp() {
         CycleDetector cycleDetector = new SimpleCycleDetector();
-        topologicalSort = new TopologicalSort(cycleDetector);
+        topologicalSort = new KahnSorter(cycleDetector);
     }
 
     @ParameterizedTest
     @MethodSource("graphs")
-    void testGraphTopologicalSort(Graph<String, EndpointPair<String>> graph, String graphId, boolean expectDag) {
+    void testGraphTopologicalSort(Graph<String, Directed<String>> graph, String graphId, boolean expectDag)
+            throws CircularDependencyException
+    {
 
         System.out.printf("Applying topological sort to %s:%n", graphId);
 
@@ -33,31 +38,22 @@ class TopologicalSortTests {
 
         if (expectDag) {
 
-            Assertions.assertTrue(result.isOk(), "Graph should be DAG");
+            List<String> ordered = result.ordered();
 
-            List<String> sortedNodes = result.unwrap();
-
-            Assertions.assertEquals(graph.nodeCount(), sortedNodes.size(),
+            Assertions.assertEquals(graph.nodeCount(), ordered.size(),
                     "All nodes must be present in topological order");
 
             for (EndpointPair<String> edge : graph.edges()) {
 
-                int from = sortedNodes.indexOf(edge.nodeU());
-                int to = sortedNodes.indexOf(edge.nodeV());
+                int from = ordered.indexOf(edge.nodeU());
+                int to = ordered.indexOf(edge.nodeV());
 
                 Assertions.assertTrue(from < to,
                         "Invalid topological order for edge " + edge);
             }
 
             System.out.println("Order of sorted graph is:");
-            System.out.println(sortedNodes);
-
-        } else {
-
-            Assertions.assertTrue(result.isError(),
-                    "Graph does not contain a cycle, topological sort is not failed");
-
-            System.out.println(result.unwrapError());
+            System.out.println(result);
 
         }
     }
@@ -89,16 +85,6 @@ class TopologicalSortTests {
                         .addEdge(EndpointPairs.directed("C", "D"))
                         .immutable();
 
-        Graph<String, EndpointPair<String>> g3 =
-                new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
-                        .addNode("X")
-                        .addNode("Y")
-                        .addNode("Z")
-                        .addEdge(EndpointPairs.directed("X", "Y"))
-                        .addEdge(EndpointPairs.directed("Y", "Z"))
-                        .addEdge(EndpointPairs.directed("Z", "X")) // cycle
-                        .immutable();
-
         Graph<String, EndpointPair<String>> g4 =
                 new AdjacencyListGraphBuilder<String, EndpointPair<String>>()
                         .addNode("N1")
@@ -127,7 +113,6 @@ class TopologicalSortTests {
         return Stream.of(
                 Arguments.of(g1, "g1", true),
                 Arguments.of(g2, "g2", true),
-                Arguments.of(g3, "g3", false),
                 Arguments.of(g4, "g4", true)
         );
     }

@@ -1,5 +1,6 @@
 package me.bottdev.kern.struct.algorithms.cycle;
 
+import me.bottdev.kern.struct.paths.CyclePath;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalIterator;
 import me.bottdev.kern.struct.algorithms.traverse.Traversals;
 import me.bottdev.kern.struct.algorithms.traverse.TraversalStep;

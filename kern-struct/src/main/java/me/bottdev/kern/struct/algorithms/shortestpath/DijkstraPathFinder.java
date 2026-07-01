@@ -1,12 +1,14 @@
 package me.bottdev.kern.struct.algorithms.shortestpath;
 
 import me.bottdev.kern.struct.PathStructure;
+import me.bottdev.kern.struct.paths.WeightedPath;
 
 import java.util.LinkedList;
 
-public class Dijkstra {
+public class DijkstraPathFinder implements PathFinder {
 
-    public <N, T extends PathStructure<N>> DijkstraPath<N> shortestPath(T structure, N start, N target) {
+    @Override
+    public <N, T extends PathStructure<N>> WeightedPath<N> find(T structure, N start, N target) {
 
         DijkstraState<N> state = initialize(start);
 
@@ -57,7 +59,7 @@ public class Dijkstra {
 
     }
 
-    private <N> DijkstraPath<N> buildResult(DijkstraState<N> state, N start, N target) {
+    private <N> WeightedPath<N> buildResult(DijkstraState<N> state, N start, N target) {
 
         double distance = state.distance(target);
         LinkedList<N> path = new LinkedList<>();
@@ -66,7 +68,7 @@ public class Dijkstra {
             path.addFirst(at);
         }
 
-        return new DijkstraPath<>(start, target, distance, path);
+        return new WeightedPath<>(start, target, distance, path);
     }
 
 }

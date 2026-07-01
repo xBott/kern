@@ -1,5 +1,6 @@
 package me.bottdev.kern.struct.algorithms.cycle;
 
+import me.bottdev.kern.struct.paths.CyclePath;
 import me.bottdev.kern.struct.graph.EndpointPair;
 import me.bottdev.kern.struct.graph.Graph;
 
