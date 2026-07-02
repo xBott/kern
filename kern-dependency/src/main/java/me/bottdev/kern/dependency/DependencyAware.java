@@ -12,11 +12,8 @@ import java.util.List;
 public interface DependencyAware<K> {
 
     /// Returns the unique key that identifies this object in the dependency graph.
-    /// By default returns `this`, which works perfectly for enums and named singletons.
     @SuppressWarnings("unchecked")
-    default K dependencyKey() {
-        return (K) this;
-    }
+    K dependencyKey();
 
     /// Returns the keys of objects this object directly depends on.
     List<DependencyRequest<K>> getDependencies();
