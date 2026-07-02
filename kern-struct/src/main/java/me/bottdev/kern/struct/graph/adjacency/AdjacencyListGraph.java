@@ -67,5 +67,13 @@ public class AdjacencyListGraph<N, E extends EndpointPair<N>> extends AbstractGr
         return immutableResult;
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("AdjacencyListGraph{\n");
+        for (E edge : edges()) {
+            sb.append(edge).append("\n");
+        }
+        sb.append('}');
+        return sb.toString();
+    }
 }
