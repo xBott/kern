@@ -13,6 +13,7 @@ dependencies {
     testImplementation(libs.assertj.core)
 
     compileOnly(libs.lombok)
+    testCompileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
 }
