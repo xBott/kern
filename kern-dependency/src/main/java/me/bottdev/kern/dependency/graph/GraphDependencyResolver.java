@@ -31,6 +31,7 @@ public class GraphDependencyResolver implements DependencyResolver {
         Map<K, T> dependentMap = buildMap(dependentContainer);
 
         Graph<K, Directed<K>> graph = buildGraph(dependentContainer, dependentMap);
+
         TopologicalSortResult<K> sortedKeys = sorter.sort(graph);
 
         return convertSortResult(sortedKeys, dependentMap);
@@ -74,10 +75,12 @@ public class GraphDependencyResolver implements DependencyResolver {
                     );
                 }
 
-                switch (request.order()) {
+                Directed<K> edge = switch (request.order()) {
                     case BEFORE -> EndpointPairs.directed(dependencyKey, dependentKey);
                     case AFTER -> EndpointPairs.directed(dependentKey, dependencyKey);
-                }
+                };
+
+                builder.addEdge(edge);
 
             }
 
