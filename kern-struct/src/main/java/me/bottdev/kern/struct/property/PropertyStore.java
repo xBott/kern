@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-
 public class PropertyStore {
 
     private final Map<Property<?>, Object> properties = new HashMap<>();
