@@ -22,9 +22,9 @@ public interface Grid<T> {
     Set<GridPosition<T>> neighbors4(int row, int column);
     Set<GridPosition<T>> neighbors8(int row, int column);
 
-    Grid<T> immutableCopy();
+    Grid<T> copy();
 
-    MutableGrid<T> mutableCopy();
+    MutableGrid<T> toMutable();
 
     GridBuilder<T> rotate(double degrees);
 
