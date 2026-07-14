@@ -10,4 +10,9 @@ public interface MutableGrid<T> extends Grid<T> {
 
     GridFitResult fit(int originRow, int originColumn, Grid<T> other, boolean override);
 
+    @Override
+    MutableGrid<T> copy();
+
+    Grid<T> toImmutable();
+
 }
