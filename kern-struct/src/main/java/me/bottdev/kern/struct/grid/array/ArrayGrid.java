@@ -105,7 +105,7 @@ public class ArrayGrid<T> implements Grid<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public ArrayGrid<T> immutableCopy() {
+    public ArrayGrid<T> copy() {
 
         T[][] copyData = (T[][]) new Object[height][width];
         for (int row = 0; row < height; row++) {
@@ -118,7 +118,7 @@ public class ArrayGrid<T> implements Grid<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public MutableArrayGrid<T> mutableCopy() {
+    public MutableArrayGrid<T> toMutable() {
 
         T[][] copyData = (T[][]) new Object[height][width];
         for (int row = 0; row < height; row++) {
@@ -127,19 +127,6 @@ public class ArrayGrid<T> implements Grid<T> {
 
         return new MutableArrayGrid<>(copyData, angle);
 
-    }
-
-    @Override
-    public String toString() {
-        var sb = new StringBuilder();
-        for (int row = 0; row < height; row++) {
-            for (int column = 0; column < width; column++) {
-                sb.append(data[row][column] == null ? "." : data[row][column]);
-                if (column < width - 1) sb.append(' ');
-            }
-            sb.append('\n');
-        }
-        return sb.toString();
     }
 
     @Override
@@ -152,7 +139,7 @@ public class ArrayGrid<T> implements Grid<T> {
         double centerRow = (height - 1) / 2.0;
         double centerColumn = (width - 1) / 2.0;
 
-        Grid<T> snapshot = immutableCopy();
+        Grid<T> snapshot = copy();
 
         double minRow = Double.MAX_VALUE;
         double maxRow = Double.MIN_VALUE;
@@ -213,6 +200,19 @@ public class ArrayGrid<T> implements Grid<T> {
         }
 
         return builder;
+    }
+
+    @Override
+    public String toString() {
+        var sb = new StringBuilder();
+        for (int row = 0; row < height; row++) {
+            for (int column = 0; column < width; column++) {
+                sb.append(data[row][column] == null ? "." : data[row][column]);
+                if (column < width - 1) sb.append(' ');
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 
 }
