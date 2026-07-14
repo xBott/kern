@@ -62,5 +62,31 @@ public class MutableArrayGrid<T> extends ArrayGrid<T> implements MutableGrid<T> 
         return GridFitResult.FIT;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public MutableArrayGrid<T> copy() {
+
+        T[][] copyData = (T[][]) new Object[height][width];
+        for (int row = 0; row < height; row++) {
+            System.arraycopy(data[row], 0, copyData[row], 0, width);
+        }
+
+        return new MutableArrayGrid<>(copyData, angle);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ArrayGrid<T> toImmutable() {
+
+        T[][] copyData = (T[][]) new Object[height][width];
+        for (int row = 0; row < height; row++) {
+            System.arraycopy(data[row], 0, copyData[row], 0, width);
+        }
+
+        return new ArrayGrid<>(copyData, angle);
+
+    }
+
 
 }
