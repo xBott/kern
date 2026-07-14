@@ -10,8 +10,8 @@ public class GridPathAdapter<T> implements PathStructure<GridPosition<T>> {
 
     public enum NeighborMode { FOUR, EIGHT }
 
-    private static final double STRAIGHT  = 1.0;
-    private static final double DIAGONAL  = Math.sqrt(2);
+    private static final double STRAIGHT = 1.0;
+    private static final double DIAGONAL = Math.sqrt(2);
 
     private final Grid<T> grid;
     private final NeighborMode mode;
