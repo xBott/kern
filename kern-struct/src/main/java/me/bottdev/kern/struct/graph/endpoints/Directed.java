@@ -6,16 +6,25 @@ import me.bottdev.kern.struct.graph.EndpointPair;
 import java.util.Objects;
 import java.util.Optional;
 
+/// Directed endpoint pair from source to target.
+///
+/// @param <N> node type
 @RequiredArgsConstructor
 public class Directed<N> implements EndpointPair<N> {
 
     private final N source;
     private final N target;
 
+    /// Returns the source node.
+    ///
+    /// @return source node
     public N source() {
         return source;
     }
 
+    /// Returns the target node.
+    ///
+    /// @return target node
     public N target() {
         return target;
     }
@@ -61,4 +70,3 @@ public class Directed<N> implements EndpointPair<N> {
     public String toString() { return source + " -> " + target; }
 
 }
-

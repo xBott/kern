@@ -4,19 +4,21 @@ import me.bottdev.kern.struct.graph.*;
 import me.bottdev.kern.struct.property.Property;
 import me.bottdev.kern.struct.property.PropertyStore;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/// Builder for adjacency-list graph instances.
+///
+/// @param <N> node type
+/// @param <E> edge endpoint type
 public class AdjacencyListGraphBuilder<N, E extends EndpointPair<N>>
         implements GraphBuilder<N, E>, MutableGraphBuilder<N, E>
 {
 
-    private final Set<N> nodes = new HashSet<>();
-    private final Set<E> edges = new HashSet<>();
+    private final Set<N> nodes = new LinkedHashSet<>();
+    private final Set<E> edges = new LinkedHashSet<>();
     private final PropertyStore propertyStore = new PropertyStore();
 
+    /// Creates a builder with self-loops and parallel edges disabled.
     public AdjacencyListGraphBuilder() {
         allowsSelfLoops(false);
         allowsParallelEdges(false);
@@ -35,13 +37,13 @@ public class AdjacencyListGraphBuilder<N, E extends EndpointPair<N>>
     }
 
     private Map<N, Set<E>> buildAdjacencyMap() {
-        Map<N, Set<E>> map = new HashMap<>();
+        Map<N, Set<E>> map = new LinkedHashMap<>();
 
-        nodes.forEach(node -> map.put(node, new HashSet<>()));
+        nodes.forEach(node -> map.put(node, new LinkedHashSet<>()));
 
         edges.forEach(edge -> {
-            map.computeIfAbsent(edge.nodeU(), _ -> new HashSet<>()).add(edge);
-            map.computeIfAbsent(edge.nodeV(), _ -> new HashSet<>()).add(edge);
+            map.computeIfAbsent(edge.nodeU(), ignored -> new LinkedHashSet<>()).add(edge);
+            map.computeIfAbsent(edge.nodeV(), ignored -> new LinkedHashSet<>()).add(edge);
         });
 
         return map;

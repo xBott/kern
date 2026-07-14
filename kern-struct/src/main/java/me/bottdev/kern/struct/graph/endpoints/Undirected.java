@@ -6,6 +6,9 @@ import me.bottdev.kern.struct.graph.EndpointPair;
 import java.util.Objects;
 import java.util.Optional;
 
+/// Undirected endpoint pair between two nodes.
+///
+/// @param <N> node type
 @RequiredArgsConstructor
 public class Undirected<N> implements EndpointPair<N> {
 
@@ -53,4 +56,3 @@ public class Undirected<N> implements EndpointPair<N> {
     public String toString() { return nodeU + " -- " + nodeV; }
 
 }
-

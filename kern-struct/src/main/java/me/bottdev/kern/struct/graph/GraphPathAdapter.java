@@ -2,13 +2,18 @@ package me.bottdev.kern.struct.graph;
 
 import lombok.RequiredArgsConstructor;
 import me.bottdev.kern.struct.PathStructure;
+import me.bottdev.kern.struct.graph.endpoints.Weighted;
 import me.bottdev.kern.struct.graph.exceptions.GraphStructureException;
 
 import java.util.Set;
 
+/// Adapts a weighted graph to the generic path structure API.
+///
+/// @param <N> node type
 @RequiredArgsConstructor
 public class GraphPathAdapter<N> implements PathStructure<N> {
 
+    /// Graph used as the path structure source.
     public final Graph<N, ? extends Weighted> graph;
 
     @Override

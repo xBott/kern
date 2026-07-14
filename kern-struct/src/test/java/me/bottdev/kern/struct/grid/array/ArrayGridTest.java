@@ -110,8 +110,8 @@ class ArrayGridTest {
     }
 
     @Test
-    void immutableCopy_isEqualToOriginal() {
-        var copy = grid.immutableCopy();
+    void copy_isEqualToOriginal() {
+        var copy = grid.copy();
 
         assertEquals(grid.width(), copy.width());
         assertEquals(grid.height(), copy.height());
