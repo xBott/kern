@@ -1,6 +1,4 @@
 dependencies {
-    implementation(project(":kern-meta:core"))
-
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
 
@@ -12,7 +10,8 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
-    compileOnly(libs.google.auto.service)
-    annotationProcessor(libs.google.auto.service)
+    implementation(project(":kern-meta:apt"))
+    implementation(project(":kern-meta:core"))
+    annotationProcessor(project(":kern-meta:apt"))
 
 }
