@@ -27,6 +27,10 @@ public final class AptAnnotationReader {
         );
     }
 
+    public static AnnotationValueModel readValue(AnnotationValue value) {
+        return value.accept(VALUE_VISITOR, null);
+    }
+
     private static final AnnotationValueVisitor<AnnotationValueModel, Void> VALUE_VISITOR =
             new SimpleAnnotationValueVisitor14<>() {
 

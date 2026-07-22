@@ -32,5 +32,7 @@ public abstract class ModelKind<M extends Model> {
     public static final ModelKind<EnumConstantModel> ENUM_CONSTANT = new ModelKind<>(EnumConstantModel.class) {};
     public static final ModelKind<RecordComponentModel> RECORD_COMPONENT = new ModelKind<>(RecordComponentModel.class) {};
     public static final ModelKind<PackageModel> PACKAGE = new ModelKind<>(PackageModel.class) {};
+    public static final ModelKind<TypeParameterModel> TYPE_PARAMETER = new ModelKind<>(TypeParameterModel.class) {};
+    public static final ModelKind<AnnotationElementModel> ANNOTATION_ELEMENT = new ModelKind<>(AnnotationElementModel.class) {};
 
 }

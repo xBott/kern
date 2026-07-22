@@ -13,8 +13,8 @@ import java.util.Set;
 
 public record AptInterfaceModel(TypeModelSkeleton skeleton) implements InterfaceModel {
 
-    public static AptInterfaceModel of(TypeElement type) {
-        return new AptInterfaceModel(TypeModelSkeleton.read(type));
+    public static AptInterfaceModel of(TypeElement typeElement) {
+        return new AptInterfaceModel(TypeModelSkeleton.read(typeElement));
     }
 
     @Override public ModelKind<InterfaceModel> kind() { return ModelKind.INTERFACE; }
@@ -25,10 +25,10 @@ public record AptInterfaceModel(TypeModelSkeleton skeleton) implements Interface
     @Override public List<AnnotationModel> annotations() { return skeleton.annotations(); }
     @Override public Optional<TypeRef> superType() { return skeleton.superType(); }
     @Override public List<TypeRef> interfaces() { return skeleton.interfaces(); }
-    @Override public List<TypeParameterModel> typeParameters() { return List.of(); } // TODO
+    @Override public List<TypeParameterModel> typeParameters() { return skeleton.typeParameters(); }
     @Override public List<FieldModel> fields() { return skeleton.fields(); }
     @Override public List<MethodModel> methods() { return skeleton.methods(); }
     @Override public List<ConstructorModel> constructors() { return skeleton.constructors(); }
-    @Override public List<TypeRef> nestedTypes() { return List.of(); } // TODO
+    @Override public List<TypeRef> nestedTypes() { return skeleton.nestedTypes(); }
 
 }

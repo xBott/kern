@@ -24,37 +24,49 @@ record TypeModelSkeleton(
         List<AnnotationModel> annotations,
         Optional<TypeRef> superType,
         List<TypeRef> interfaces,
+        List<TypeParameterModel> typeParameters,
         List<FieldModel> fields,
         List<MethodModel> methods,
-        List<ConstructorModel> constructors
+        List<ConstructorModel> constructors,
+        List<TypeRef> nestedTypes
 ) {
 
-    static TypeModelSkeleton read(TypeElement type) {
-        Optional<TypeRef> superType = type.getSuperclass().getKind() == javax.lang.model.type.TypeKind.NONE
+    static TypeModelSkeleton read(TypeElement typeElement) {
+        Optional<TypeRef> superType = typeElement.getSuperclass().getKind() == javax.lang.model.type.TypeKind.NONE
                 ? Optional.empty()
-                : Optional.of(TypeRefReader.read(type.getSuperclass()));
+                : Optional.of(TypeRefReader.read(typeElement.getSuperclass()));
 
-        List<TypeRef> interfaces = type.getInterfaces().stream().map(TypeRefReader::read).toList();
+        List<TypeRef> interfaces = typeElement.getInterfaces().stream().map(TypeRefReader::read).toList();
 
-        List<FieldModel> fields = ElementFilter.fieldsIn(type.getEnclosedElements()).stream()
+        List<FieldModel> fields = ElementFilter.fieldsIn(typeElement.getEnclosedElements()).stream()
                 .map(AptVariableModelReader::readField)
                 .toList();
 
-        List<MethodModel> methods = ElementFilter.methodsIn(type.getEnclosedElements()).stream()
+        List<MethodModel> methods = ElementFilter.methodsIn(typeElement.getEnclosedElements()).stream()
                 .map(AptExecutableModelReader::readMethod)
                 .toList();
 
-        List<ConstructorModel> constructors = ElementFilter.constructorsIn(type.getEnclosedElements()).stream()
+        List<ConstructorModel> constructors = ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
                 .map(AptExecutableModelReader::readConstructor)
                 .toList();
 
+        List<TypeRef> nestedTypes = ElementFilter.typesIn(typeElement.getEnclosedElements()).stream()
+                .map(nested -> TypeRef.of(nested.getQualifiedName().toString()))
+                .toList();
+
         return new TypeModelSkeleton(
-                type.getQualifiedName().toString(),
-                type.getSimpleName().toString(),
-                ModelUtils.readPackageName(type),
-                ModelUtils.readModifiers(type),
-                ModelUtils.readAnnotations(type),
-                superType, interfaces, fields, methods, constructors
+                typeElement.getQualifiedName().toString(),
+                typeElement.getSimpleName().toString(),
+                ModelUtils.readPackageName(typeElement),
+                ModelUtils.readModifiers(typeElement),
+                ModelUtils.readAnnotations(typeElement),
+                superType,
+                interfaces,
+                ModelUtils.readTypeParameters(typeElement),
+                fields,
+                methods,
+                constructors,
+                nestedTypes
         );
     }
 
