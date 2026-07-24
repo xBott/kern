@@ -1,11 +1,11 @@
 package me.bottdev.kern.meta.core.configuration;
 
-import me.bottdev.kern.meta.core.models.Model;
+import me.bottdev.kern.meta.core.models.ElementModel;
 
 import java.lang.annotation.Annotation;
 
-public interface KindStage<M extends Model> {
+public interface KindStage<M extends ElementModel> {
 
-    <A extends Annotation> AnnotationStage<M, A> with(Class<A> annotationType);
+    <A extends Annotation> AnnotationStage<M> with(Class<A> annotationType);
 
 }

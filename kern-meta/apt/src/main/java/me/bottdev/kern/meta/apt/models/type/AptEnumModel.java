@@ -13,12 +13,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public record AptEnumModel(TypeModelSkeleton skeleton, List<EnumConstantModel> constants) implements EnumModel {
+public record AptEnumModel(
+        TypeModelSkeleton skeleton,
+        List<EnumConstantModel> constants
+) implements EnumModel {
 
     public static AptEnumModel of(TypeElement typeElement) {
         return new AptEnumModel(TypeModelSkeleton.read(typeElement), ModelUtils.readEnumConstants(typeElement));
     }
 
+    @Override public ElementHandle handle() { return skeleton.handle(); }
     @Override public ModelKind<EnumModel> kind() { return ModelKind.ENUM; }
     @Override public String qualifiedName() { return skeleton.qualifiedName(); }
     @Override public String simpleName() { return skeleton.simpleName(); }
@@ -33,4 +37,5 @@ public record AptEnumModel(TypeModelSkeleton skeleton, List<EnumConstantModel> c
     @Override public List<ConstructorModel> constructors() { return skeleton.constructors(); }
     @Override public List<TypeRef> nestedTypes() { return skeleton.nestedTypes(); }
     @Override public List<EnumConstantModel> constants() {return constants; }
+
 }

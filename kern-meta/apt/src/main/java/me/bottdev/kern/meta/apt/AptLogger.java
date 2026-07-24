@@ -2,6 +2,10 @@ package me.bottdev.kern.meta.apt;
 
 import lombok.RequiredArgsConstructor;
 import me.bottdev.kern.meta.core.Logger;
+import me.bottdev.kern.meta.core.MessageType;
+import me.bottdev.kern.meta.core.models.ElementHandle;
+import me.bottdev.kern.meta.core.models.ElementModel;
+import me.bottdev.kern.meta.core.models.Model;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
@@ -12,19 +16,42 @@ public class AptLogger implements Logger {
 
     private final Messager messager;
 
+
     @Override
-    public void info(String message) {
-        messager.printMessage(Diagnostic.Kind.NOTE, message);
+    public void message(MessageType type, String message) {
+        switch (type) {
+            case INFO -> messager.printMessage(Diagnostic.Kind.NOTE, message);
+            case WARN -> messager.printMessage(Diagnostic.Kind.WARNING, message);
+            case ERROR -> messager.printMessage(Diagnostic.Kind.ERROR, message);
+        }
     }
 
     @Override
-    public void warn(String message, Element element) {
-        messager.printMessage(Diagnostic.Kind.WARNING, message, element);
-    }
+    public void message(MessageType type, String message, Model model) {
 
-    @Override
-    public void error(String message, Element element) {
-        messager.printMessage(Diagnostic.Kind.ERROR, message, element);
+        if (model instanceof ElementModel elementModel) {
+
+            ElementHandle handle = elementModel.handle();
+            Object raw = handle.raw();
+
+            if (raw instanceof Element element) {
+
+                switch (type) {
+                    case INFO -> messager.printMessage(Diagnostic.Kind.NOTE, message, element);
+                    case WARN -> messager.printMessage(Diagnostic.Kind.WARNING, message, element);
+                    case ERROR -> messager.printMessage(Diagnostic.Kind.ERROR, message, element);
+                }
+
+            } else {
+                message(type, message);
+
+            }
+
+        } else {
+            message(type, message);
+
+        }
+
     }
 
 }

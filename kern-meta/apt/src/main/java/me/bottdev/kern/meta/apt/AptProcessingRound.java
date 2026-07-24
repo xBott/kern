@@ -4,7 +4,7 @@ import me.bottdev.kern.meta.core.ProcessingContext;
 import me.bottdev.kern.meta.core.ProcessingRound;
 import me.bottdev.kern.meta.core.configuration.Pipeline;
 import me.bottdev.kern.meta.core.configuration.ProcessorConfiguration;
-import me.bottdev.kern.meta.core.models.Model;
+import me.bottdev.kern.meta.core.models.ElementModel;
 import me.bottdev.kern.meta.core.models.ModelFactory;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -19,14 +19,14 @@ public record AptProcessingRound(
     @Override
     public void run(ProcessorConfiguration configuration, ProcessingContext context) {
 
-        for (Pipeline<?, ?> pipeline : configuration.definitions()) {
+        for (Pipeline<?> pipeline : configuration.definitions()) {
 
             for (Element element : environment.getElementsAnnotatedWith(pipeline.annotationType())) {
 
-                Optional<Model> modelOptional = modelFactory.create(element);
+                Optional<ElementModel> modelOptional = modelFactory.create(element);
                 if (modelOptional.isEmpty()) continue;
 
-                Model model = modelOptional.get();
+                ElementModel model = modelOptional.get();
                 pipeline.run(model, context);
 
             }

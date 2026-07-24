@@ -1,8 +1,8 @@
 package me.bottdev.kern.meta.core.diagnostic;
 
 @FunctionalInterface
-public interface DiagnosticRule<R> {
+public interface DiagnosticRule<M> {
 
-    DiagnosticRuleResult check(R model);
+    DiagnosticRuleResult check(M model);
 
 }

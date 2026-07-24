@@ -11,12 +11,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public record AptInterfaceModel(TypeModelSkeleton skeleton) implements InterfaceModel {
+public record AptInterfaceModel(
+        TypeModelSkeleton skeleton
+) implements InterfaceModel {
 
     public static AptInterfaceModel of(TypeElement typeElement) {
         return new AptInterfaceModel(TypeModelSkeleton.read(typeElement));
     }
 
+    @Override public ElementHandle handle() { return skeleton.handle(); }
     @Override public ModelKind<InterfaceModel> kind() { return ModelKind.INTERFACE; }
     @Override public String qualifiedName() { return skeleton.qualifiedName(); }
     @Override public String simpleName() { return skeleton.simpleName(); }

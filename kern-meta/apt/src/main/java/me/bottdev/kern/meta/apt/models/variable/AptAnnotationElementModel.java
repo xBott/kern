@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public record AptAnnotationElementModel(
+        ElementHandle handle,
         String simpleName,
         List<AnnotationModel> annotations,
         TypeRef type,

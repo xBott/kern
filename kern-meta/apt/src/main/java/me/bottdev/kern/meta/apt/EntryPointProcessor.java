@@ -6,6 +6,8 @@ import me.bottdev.kern.meta.core.models.ModelKind;
 
 import javax.annotation.processing.Processor;
 
+import static me.bottdev.kern.meta.core.diagnostic.DiagnosticRuleResult.warn;
+
 @AutoService(Processor.class)
 public class EntryPointProcessor extends AbstractMetaProcessor {
 
@@ -13,14 +15,11 @@ public class EntryPointProcessor extends AbstractMetaProcessor {
     protected void configure(ProcessorConfigurationBuilder builder) {
         builder.select(ModelKind.CLASS)
                 .with(EntryPoint.class)
-                .peek((model, _) -> {
+                .validate(rules -> rules
+                        .rule(_ -> warn("Found a warning"))
+                )
+                .accept();
 
-                    context().logger().info("Methods of class " + model.qualifiedName() + ":");
-                    model.methods().forEach(methodModel -> {
-                        context().logger().info(" - " + methodModel.simpleName() + " -> " + methodModel.returnType().qualifiedName());
-                    });
-
-                });
     }
 
 }

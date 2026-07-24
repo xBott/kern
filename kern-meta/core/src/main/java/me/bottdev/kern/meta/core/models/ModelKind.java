@@ -8,7 +8,7 @@ import me.bottdev.kern.meta.core.models.variable.FieldModel;
 import me.bottdev.kern.meta.core.models.variable.ParameterModel;
 import me.bottdev.kern.meta.core.models.variable.RecordComponentModel;
 
-public abstract class ModelKind<M extends Model> {
+public abstract class ModelKind<M extends ElementModel> {
 
     private final Class<M> modelClass;
 
@@ -16,7 +16,7 @@ public abstract class ModelKind<M extends Model> {
         this.modelClass = modelClass;
     }
 
-    public M cast(Model model) {
+    public M cast(ElementModel model) {
         return modelClass.cast(model);
     }
 

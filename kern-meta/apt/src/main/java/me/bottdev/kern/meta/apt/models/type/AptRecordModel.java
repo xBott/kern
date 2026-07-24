@@ -13,12 +13,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public record AptRecordModel(TypeModelSkeleton skeleton, List<RecordComponentModel> components) implements RecordModel {
+public record AptRecordModel(
+        TypeModelSkeleton skeleton,
+        List<RecordComponentModel> components
+) implements RecordModel {
 
     public static AptRecordModel of(TypeElement typeElement) {
         return new AptRecordModel(TypeModelSkeleton.read(typeElement), ModelUtils.readRecordComponents(typeElement));
     }
 
+    @Override public ElementHandle handle() { return skeleton.handle(); }
     @Override public ModelKind<RecordModel> kind() { return ModelKind.RECORD; }
     @Override public String qualifiedName() { return skeleton.qualifiedName(); }
     @Override public String simpleName() { return skeleton.simpleName(); }
@@ -33,4 +37,5 @@ public record AptRecordModel(TypeModelSkeleton skeleton, List<RecordComponentMod
     @Override public List<ConstructorModel> constructors() { return skeleton.constructors(); }
     @Override public List<TypeRef> nestedTypes() { return skeleton.nestedTypes(); }
     @Override public List<RecordComponentModel> components() { return components; }
+
 }

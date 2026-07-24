@@ -1,11 +1,11 @@
 package me.bottdev.kern.meta.core;
 
-import javax.lang.model.element.Element;
+import me.bottdev.kern.meta.core.models.Model;
 
 public interface Logger {
 
-    void info(String message);
-    void warn(String message, Element element);
-    void error(String message, Element element);
+    void message(MessageType type, String message);
+
+    void message(MessageType type, String message, Model model);
 
 }

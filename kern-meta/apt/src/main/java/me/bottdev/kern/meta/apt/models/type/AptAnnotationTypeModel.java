@@ -15,12 +15,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public record AptAnnotationTypeModel(TypeModelSkeleton skeleton, List<AnnotationElementModel> elements) implements AnnotationTypeModel {
+public record AptAnnotationTypeModel(
+        TypeModelSkeleton skeleton,
+        List<AnnotationElementModel> elements
+) implements AnnotationTypeModel {
 
     public static AptAnnotationTypeModel of(TypeElement typeElement) {
         return new AptAnnotationTypeModel(TypeModelSkeleton.read(typeElement), ModelUtils.readAnnotationElements(typeElement));
     }
 
+    @Override public ElementHandle handle() { return skeleton.handle(); }
     @Override public ModelKind<AnnotationTypeModel> kind() { return ModelKind.ANNOTATION_TYPE; }
     @Override public String qualifiedName() { return skeleton.qualifiedName(); }
     @Override public String simpleName() { return skeleton.simpleName(); }
@@ -35,4 +39,5 @@ public record AptAnnotationTypeModel(TypeModelSkeleton skeleton, List<Annotation
     @Override public List<ConstructorModel> constructors() { return skeleton.constructors(); }
     @Override public List<TypeRef> nestedTypes() { return skeleton.nestedTypes(); }
     @Override public List<AnnotationElementModel> elements() { return elements; }
+
 }

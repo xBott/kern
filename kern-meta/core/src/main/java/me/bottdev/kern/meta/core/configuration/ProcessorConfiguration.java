@@ -6,17 +6,17 @@ import java.util.stream.Collectors;
 
 public final class ProcessorConfiguration {
 
-    private final List<Pipeline<?, ?>> definitions;
+    private final List<Pipeline<?>> definitions;
     private final Set<String> supportedAnnotationTypes;
 
-    public ProcessorConfiguration(List<Pipeline<?, ?>> definitions) {
+    public ProcessorConfiguration(List<Pipeline<?>> definitions) {
         this.definitions = definitions;
         this.supportedAnnotationTypes = definitions.stream().map(definition ->
                 definition.annotationType().getCanonicalName()
         ).collect(Collectors.toUnmodifiableSet());
     }
 
-    public List<Pipeline<?, ?>> definitions() {
+    public List<Pipeline<?>> definitions() {
         return definitions;
     }
 

@@ -33,7 +33,7 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
         context = new ProcessingContext(logger, fileFactory);
         modelFactory = new AptModelFactory();
 
-        ProcessorConfigurationBuilder configurationBuilder = new AptProcessorConfigurationBuilder();
+        ProcessorConfigurationBuilder configurationBuilder = new AptProcessorConfigurationBuilder(context);
         configure(configurationBuilder);
         configuration = configurationBuilder.build();
 

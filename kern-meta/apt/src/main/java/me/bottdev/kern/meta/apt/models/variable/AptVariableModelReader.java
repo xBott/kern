@@ -1,5 +1,6 @@
 package me.bottdev.kern.meta.apt.models.variable;
 
+import me.bottdev.kern.meta.apt.models.AptElementHandle;
 import me.bottdev.kern.meta.apt.models.ModelUtils;
 import me.bottdev.kern.meta.apt.models.TypeRefReader;
 import me.bottdev.kern.meta.core.models.variable.FieldModel;
@@ -12,6 +13,7 @@ public final class AptVariableModelReader {
 
     public static FieldModel readField(VariableElement element) {
         return new AptFieldModel(
+                new AptElementHandle(element),
                 element.getSimpleName().toString(),
                 ModelUtils.readModifiers(element),
                 ModelUtils.readAnnotations(element),
@@ -22,6 +24,7 @@ public final class AptVariableModelReader {
 
     public static ParameterModel readParameter(VariableElement element) {
         return new AptParameterModel(
+                new AptElementHandle(element),
                 element.getSimpleName().toString(),
                 ModelUtils.readModifiers(element),
                 ModelUtils.readAnnotations(element),

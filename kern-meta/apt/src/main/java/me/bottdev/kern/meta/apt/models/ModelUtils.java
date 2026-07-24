@@ -34,7 +34,7 @@ public final class ModelUtils {
     public static List<AnnotationModel> readAnnotations(Element element) {
         return element.getAnnotationMirrors().stream()
                 .map(AptAnnotationReader::read)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static Set<Modifier> readModifiers(Element element) {
@@ -46,6 +46,7 @@ public final class ModelUtils {
     public static List<TypeParameterModel> readTypeParameters(Parameterizable element) {
         return element.getTypeParameters().stream()
                 .map(typeParameter -> (TypeParameterModel) new AptTypeParameterModel(
+                        new AptElementHandle(typeParameter),
                         typeParameter.getSimpleName().toString(),
                         ModelUtils.readAnnotations(typeParameter),
                         typeParameter.getBounds().stream().map(TypeRefReader::read).toList()))
@@ -55,6 +56,7 @@ public final class ModelUtils {
     public static List<RecordComponentModel> readRecordComponents(TypeElement recordType) {
         return recordType.getRecordComponents().stream()
                 .map(element -> (RecordComponentModel) new AptRecordComponentModel(
+                        new AptElementHandle(element),
                         element.getSimpleName().toString(),
                         ModelUtils.readModifiers(element),
                         ModelUtils.readAnnotations(element),
@@ -66,11 +68,12 @@ public final class ModelUtils {
         return enumType.getEnclosedElements().stream()
                 .filter(element -> element.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(VariableElement.class::cast)
-                .map(e -> (EnumConstantModel) new AptEnumConstantModel(
-                        e.getSimpleName().toString(),
-                        ModelUtils.readModifiers(e),
-                        ModelUtils.readAnnotations(e),
-                        TypeRefReader.read(e.asType())))
+                .map(variableElement -> (EnumConstantModel) new AptEnumConstantModel(
+                        new AptElementHandle(enumType),
+                        variableElement.getSimpleName().toString(),
+                        ModelUtils.readModifiers(variableElement),
+                        ModelUtils.readAnnotations(variableElement),
+                        TypeRefReader.read(variableElement.asType())))
                 .toList();
     }
 
@@ -83,6 +86,7 @@ public final class ModelUtils {
                             : Optional.of(AptAnnotationReader.readValue(defaultValue));
 
                     return (AnnotationElementModel) new AptAnnotationElementModel(
+                            new AptElementHandle(annotationType),
                             method.getSimpleName().toString(),
                             ModelUtils.readAnnotations(method),
                             TypeRefReader.read(method.getReturnType()),

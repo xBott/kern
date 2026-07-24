@@ -1,5 +1,6 @@
 package me.bottdev.kern.meta.apt.models.type;
 
+import me.bottdev.kern.meta.apt.models.AptElementHandle;
 import me.bottdev.kern.meta.apt.models.ModelUtils;
 import me.bottdev.kern.meta.apt.models.TypeRefReader;
 import me.bottdev.kern.meta.apt.models.executable.AptExecutableModelReader;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 record TypeModelSkeleton(
+        ElementHandle handle,
         String qualifiedName,
         String simpleName,
         String packageName,
@@ -55,6 +57,7 @@ record TypeModelSkeleton(
                 .toList();
 
         return new TypeModelSkeleton(
+                new AptElementHandle(typeElement),
                 typeElement.getQualifiedName().toString(),
                 typeElement.getSimpleName().toString(),
                 ModelUtils.readPackageName(typeElement),

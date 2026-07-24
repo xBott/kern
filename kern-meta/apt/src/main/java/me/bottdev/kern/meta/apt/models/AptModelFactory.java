@@ -3,7 +3,7 @@ package me.bottdev.kern.meta.apt.models;
 import me.bottdev.kern.meta.apt.models.executable.AptExecutableModelReader;
 import me.bottdev.kern.meta.apt.models.type.*;
 import me.bottdev.kern.meta.apt.models.variable.AptVariableModelReader;
-import me.bottdev.kern.meta.core.models.Model;
+import me.bottdev.kern.meta.core.models.ElementModel;
 import me.bottdev.kern.meta.core.models.ModelFactory;
 
 import javax.lang.model.element.Element;
@@ -15,8 +15,8 @@ import java.util.Optional;
 public class AptModelFactory implements ModelFactory<Element> {
 
     @Override
-    public Optional<Model> create(Element element) {
-        Model model = switch (element.getKind()) {
+    public Optional<ElementModel> create(Element element) {
+        ElementModel model = switch (element.getKind()) {
             case CLASS -> AptClassModel.of((TypeElement) element);
             case INTERFACE -> AptInterfaceModel.of((TypeElement) element);
             case ENUM -> AptEnumModel.of((TypeElement) element);

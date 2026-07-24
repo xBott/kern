@@ -11,12 +11,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public record AptClassModel(TypeModelSkeleton skeleton) implements ClassModel {
+public record AptClassModel(
+        TypeModelSkeleton skeleton
+) implements ClassModel {
 
     public static AptClassModel of(TypeElement typeElement) {
         return new AptClassModel(TypeModelSkeleton.read(typeElement));
     }
 
+    @Override public ElementHandle handle() { return skeleton.handle(); }
     @Override public ModelKind<ClassModel> kind() { return ModelKind.CLASS; }
     @Override public String qualifiedName() { return skeleton.qualifiedName(); }
     @Override public String simpleName() { return skeleton.simpleName(); }

@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Set;
 
 record AptConstructorModel(
+        ElementHandle handle,
         String simpleName,
         Set<Modifier> modifiers,
         List<AnnotationModel> annotations,
-        List<ParameterModel> parameters
+        List<ParameterModel> parameters,
+        List<TypeParameterModel> typeParameters,
+        List<TypeRef> thrownTypes
 ) implements ConstructorModel {
 
     @Override public ModelKind<ConstructorModel> kind() { return ModelKind.CONSTRUCTOR; }
-    @Override public List<TypeParameterModel> typeParameters() { return List.of(); }        // TODO
-    @Override public List<TypeRef> thrownTypes() { return List.of(); }                      // TODO
 
 }
