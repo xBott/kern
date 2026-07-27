@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.bottdev.kern.meta.core.Logger;
 import me.bottdev.kern.meta.core.MessageType;
 import me.bottdev.kern.meta.core.models.ElementHandle;
+import me.bottdev.kern.meta.core.models.ElementRepresentation;
 import me.bottdev.kern.meta.core.models.Model;
 
 import javax.annotation.processing.Messager;
@@ -28,9 +29,9 @@ public class AptLogger implements Logger {
     @Override
     public void message(MessageType type, String message, Object object) {
 
-        if (object instanceof Model model) {
+        if (object instanceof ElementRepresentation representation) {
 
-            ElementHandle handle = model.handle();
+            ElementHandle handle = representation.handle();
             Object raw = handle.raw();
 
             if (raw instanceof Element element) {

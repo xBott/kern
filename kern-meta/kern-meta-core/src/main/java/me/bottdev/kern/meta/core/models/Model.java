@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 
-public interface Model extends ElementHandle {
+public interface Model extends ElementRepresentation {
 
     ModelKind<?> kind();
     List<AnnotationModel> annotations();
