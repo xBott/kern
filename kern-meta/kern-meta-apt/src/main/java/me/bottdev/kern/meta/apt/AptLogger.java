@@ -1,0 +1,56 @@
+package me.bottdev.kern.meta.apt;
+
+import lombok.RequiredArgsConstructor;
+import me.bottdev.kern.meta.core.Logger;
+import me.bottdev.kern.meta.core.MessageType;
+import me.bottdev.kern.meta.core.models.ElementHandle;
+import me.bottdev.kern.meta.core.models.Model;
+
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
+
+@RequiredArgsConstructor
+public class AptLogger implements Logger {
+
+    private final Messager messager;
+
+
+    @Override
+    public void message(MessageType type, String message) {
+        switch (type) {
+            case INFO -> messager.printMessage(Diagnostic.Kind.NOTE, message);
+            case WARN -> messager.printMessage(Diagnostic.Kind.WARNING, message);
+            case ERROR -> messager.printMessage(Diagnostic.Kind.ERROR, message);
+        }
+    }
+
+    @Override
+    public void message(MessageType type, String message, Object object) {
+
+        if (object instanceof Model model) {
+
+            ElementHandle handle = model.handle();
+            Object raw = handle.raw();
+
+            if (raw instanceof Element element) {
+
+                switch (type) {
+                    case INFO -> messager.printMessage(Diagnostic.Kind.NOTE, message, element);
+                    case WARN -> messager.printMessage(Diagnostic.Kind.WARNING, message, element);
+                    case ERROR -> messager.printMessage(Diagnostic.Kind.ERROR, message, element);
+                }
+
+            } else {
+                message(type, message);
+
+            }
+
+        } else {
+            message(type, message);
+
+        }
+
+    }
+
+}
