@@ -20,6 +20,7 @@ import java.util.Set;
 
 public abstract class AbstractMetaProcessor extends AbstractProcessor {
 
+    private Filer filer;
     private ProcessingContext context;
     private ModelFactory<Element> modelFactory;
     private ProcessorConfiguration configuration;
@@ -32,8 +33,10 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
+        this.filer = processingEnv.getFiler();
+
         Logger logger = new AptLogger(processingEnv.getMessager());
-        FileFactory fileFactory = new AptFileFactory(processingEnv.getFiler());
+        FileFactory fileFactory = new AptFileFactory(filer);
         ModelRegistry modelRegistry = new ModelRegistry();
 
         context = new ProcessingContext(logger, fileFactory, modelRegistry);
