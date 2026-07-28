@@ -54,6 +54,7 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
         if (roundEnv.processingOver()) {
+            if (context.logger().count(MessageType.ERROR) > 0) return false;
             runStandalonePipelines();
 
         } else {

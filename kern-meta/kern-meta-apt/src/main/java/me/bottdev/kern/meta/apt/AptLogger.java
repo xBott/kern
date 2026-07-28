@@ -10,15 +10,24 @@ import me.bottdev.kern.meta.core.models.Model;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
+import java.util.EnumMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class AptLogger implements Logger {
 
+    private final EnumMap<MessageType, Integer> counts = new EnumMap<>(MessageType.class);
     private final Messager messager;
 
+    @Override
+    public int count(MessageType type) {
+        return counts.getOrDefault(type, 0);
+    }
 
     @Override
     public void message(MessageType type, String message) {
+        int prev = count(type);
+        counts.put(type, prev + 1);
         switch (type) {
             case INFO -> messager.printMessage(Diagnostic.Kind.NOTE, message);
             case WARN -> messager.printMessage(Diagnostic.Kind.WARNING, message);
