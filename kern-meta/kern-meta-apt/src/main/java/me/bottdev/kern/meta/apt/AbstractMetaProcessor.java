@@ -98,4 +98,8 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
+    protected Filer filer() {
+        return filer;
+    }
+
 }
