@@ -1,7 +1,7 @@
 package me.bottdev.kern.meta.core.configuration;
 
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipelineBuilder;
-import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipelineBuilder;
+import me.bottdev.kern.meta.core.configuration.standalone.EmptyStandalonePipelineBuilder;
 import me.bottdev.kern.meta.core.models.Model;
 import me.bottdev.kern.meta.core.models.ModelKind;
 
@@ -14,9 +14,9 @@ public interface ProcessorConfigurationBuilder {
             Class<A> annotationType
     );
 
-    StandalonePipelineBuilder afterAll();
+    EmptyStandalonePipelineBuilder afterAll();
 
-    StandalonePipelineBuilder afterRound();
+    EmptyStandalonePipelineBuilder afterRound();
 
     ProcessorConfiguration build();
 

@@ -4,10 +4,13 @@ import me.bottdev.kern.meta.core.configuration.PipelineBuilder;
 import me.bottdev.kern.meta.core.diagnostic.standalone.StandaloneDiagnosticBuilder;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public interface StandalonePipelineBuilder extends PipelineBuilder {
+public interface EmptyStandalonePipelineBuilder extends PipelineBuilder {
 
-    StandalonePipelineBuilder validate(Consumer<StandaloneDiagnosticBuilder> rules);
+    <M> ResultStandalonePipelineBuilder<M> map(Supplier<M> supplier);
+
+    EmptyStandalonePipelineBuilder validate(Consumer<StandaloneDiagnosticBuilder> rules);
 
     void generate(Runnable runnable);
 

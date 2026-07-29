@@ -7,6 +7,7 @@ import me.bottdev.kern.meta.core.configuration.ProcessorConfigurationBuilder;
 import me.bottdev.kern.meta.core.configuration.ProcessorConfigurationBuilderImpl;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipeline;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipelineContext;
+import me.bottdev.kern.meta.core.configuration.standalone.EmptyStandalonePipeline;
 import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipeline;
 import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipelineContext;
 import me.bottdev.kern.meta.core.models.Model;
@@ -62,10 +63,10 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
 
         } else {
 
-            boolean generated = false;
-            generated |= runBoundPipelines(roundEnv);
-            generated |= runAfterRoundPipelines();
-            return generated;
+            boolean continueProcessing = false;
+            continueProcessing |= runBoundPipelines(roundEnv);
+            continueProcessing |= runAfterRoundPipelines();
+            return continueProcessing;
 
         }
 
@@ -79,18 +80,18 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
     private boolean runAfterRoundPipelines() {
         StandalonePipelineContext pipelineContext = new StandalonePipelineContext(context);
 
-        boolean generated = false;
+        boolean continueProcessing = false;
 
         for (StandalonePipeline pipeline : configuration.afterRoundPipelines()) {
-            generated |= pipeline.run(pipelineContext);
+            continueProcessing |= pipeline.run(pipelineContext);
         }
 
-        return generated;
+        return continueProcessing;
     }
 
     private boolean runBoundPipelines(RoundEnvironment roundEnv) {
 
-        boolean generated = false;
+        boolean continueProcessing = false;
 
         for (BoundPipeline<?> pipeline : configuration.boundPipelines()) {
 
@@ -100,13 +101,13 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
                 if (modelOptional.isEmpty()) continue;
                 Model rawModel = modelOptional.get();
                 Model indexed = context.modelRegistry().register(pipeline.kind(), rawModel);
-                generated |= pipeline.run(new BoundPipelineContext(indexed, context));
+                continueProcessing |= pipeline.run(new BoundPipelineContext(indexed, context));
 
             }
 
         }
 
-        return generated;
+        return continueProcessing;
 
     }
 

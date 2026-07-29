@@ -5,9 +5,10 @@ import me.bottdev.kern.meta.core.ProcessingContext;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipeline;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipelineBuilder;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipelineBuilderImpl;
+import me.bottdev.kern.meta.core.configuration.standalone.EmptyStandalonePipeline;
+import me.bottdev.kern.meta.core.configuration.standalone.EmptyStandalonePipelineBuilder;
+import me.bottdev.kern.meta.core.configuration.standalone.EmptyStandalonePipelineBuilderImpl;
 import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipeline;
-import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipelineBuilder;
-import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipelineBuilderImpl;
 import me.bottdev.kern.meta.core.models.Model;
 import me.bottdev.kern.meta.core.models.ModelKind;
 
@@ -41,16 +42,16 @@ public class ProcessorConfigurationBuilderImpl implements ProcessorConfiguration
     }
 
     @Override
-    public StandalonePipelineBuilder afterAll() {
-        return new StandalonePipelineBuilderImpl(
+    public EmptyStandalonePipelineBuilder afterAll() {
+        return new EmptyStandalonePipelineBuilderImpl(
                 afterAllPipelines
         );
 
     }
 
     @Override
-    public StandalonePipelineBuilder afterRound() {
-        return new StandalonePipelineBuilderImpl(
+    public EmptyStandalonePipelineBuilder afterRound() {
+        return new EmptyStandalonePipelineBuilderImpl(
                 afterRoundPipelines
         );
 

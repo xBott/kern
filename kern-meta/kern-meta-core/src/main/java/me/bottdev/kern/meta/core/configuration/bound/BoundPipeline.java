@@ -27,14 +27,14 @@ public record BoundPipeline<R>(
         Stream<R> stream = transform.apply(model);
         Iterator<R> iterator = stream.iterator();
 
-        boolean generated = false;
+        boolean continueProcessing = false;
 
         while (iterator.hasNext()) {
             R representation = iterator.next();
-            generated |= predicate.test(representation);
+            continueProcessing |= predicate.test(representation);
         }
 
-        return generated;
+        return continueProcessing;
 
     }
 

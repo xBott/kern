@@ -1,6 +1,7 @@
 package me.bottdev.kern.meta.core.configuration;
 
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipeline;
+import me.bottdev.kern.meta.core.configuration.standalone.EmptyStandalonePipeline;
 import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipeline;
 
 import java.util.List;
