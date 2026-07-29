@@ -59,14 +59,26 @@ public record BoundPipelineBuilderImpl<M>(
     }
 
     @Override
-    public void finishWith(Consumer<M> consumer) {
-        BoundPipeline<M> pipeline = new BoundPipeline<>(kind, annotationType, transform, consumer);
+    public void generate(Consumer<M> consumer) {
+        BoundPipeline<M> pipeline = new BoundPipeline<>(kind, annotationType, transform, model -> {
+            consumer.accept(model);
+            return true;
+        });
+        sink.add(pipeline);
+    }
+
+    @Override
+    public void run(Consumer<M> consumer) {
+        BoundPipeline<M> pipeline = new BoundPipeline<>(kind, annotationType, transform, model -> {
+            consumer.accept(model);
+            return false;
+        });
         sink.add(pipeline);
     }
 
     @Override
     public void finish() {
-        finishWith(_ -> {});
+        run(_ -> {});
     }
 
     private <R> BoundPipelineBuilderImpl<R> next(Function<Model, Stream<R>> newTransform) {

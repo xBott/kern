@@ -21,10 +21,11 @@ public class ProcessorConfigurationBuilderImpl implements ProcessorConfiguration
 
     private final ProcessingContext context;
     private final List<BoundPipeline<?>> boundPipelines = new ArrayList<>();
-    private final List<StandalonePipeline> standalonePipelines = new ArrayList<>();
+    private final List<StandalonePipeline> afterAllPipelines = new ArrayList<>();
+    private final List<StandalonePipeline> afterRoundPipelines = new ArrayList<>();
 
     @Override
-    public <M extends Model, A extends Annotation> BoundPipelineBuilder<M> bound(
+    public <M extends Model, A extends Annotation> BoundPipelineBuilder<M> select(
             ModelKind<M> kind,
             Class<A> annotationType
     ) {
@@ -40,9 +41,17 @@ public class ProcessorConfigurationBuilderImpl implements ProcessorConfiguration
     }
 
     @Override
-    public StandalonePipelineBuilder standalone() {
+    public StandalonePipelineBuilder afterAll() {
         return new StandalonePipelineBuilderImpl(
-                standalonePipelines
+                afterAllPipelines
+        );
+
+    }
+
+    @Override
+    public StandalonePipelineBuilder afterRound() {
+        return new StandalonePipelineBuilderImpl(
+                afterRoundPipelines
         );
 
     }
@@ -51,7 +60,8 @@ public class ProcessorConfigurationBuilderImpl implements ProcessorConfiguration
     public ProcessorConfiguration build() {
         return new ProcessorConfiguration(
                 boundPipelines,
-                standalonePipelines
+                afterAllPipelines,
+                afterRoundPipelines
         );
     }
 

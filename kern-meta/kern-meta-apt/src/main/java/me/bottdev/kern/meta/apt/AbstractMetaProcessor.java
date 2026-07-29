@@ -7,6 +7,7 @@ import me.bottdev.kern.meta.core.configuration.ProcessorConfigurationBuilder;
 import me.bottdev.kern.meta.core.configuration.ProcessorConfigurationBuilderImpl;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipeline;
 import me.bottdev.kern.meta.core.configuration.bound.BoundPipelineContext;
+import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipeline;
 import me.bottdev.kern.meta.core.configuration.standalone.StandalonePipelineContext;
 import me.bottdev.kern.meta.core.models.Model;
 import me.bottdev.kern.meta.core.models.ModelFactory;
@@ -16,6 +17,7 @@ import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class AbstractMetaProcessor extends AbstractProcessor {
@@ -55,37 +57,56 @@ public abstract class AbstractMetaProcessor extends AbstractProcessor {
 
         if (roundEnv.processingOver()) {
             if (context.logger().count(MessageType.ERROR) > 0) return false;
-            runStandalonePipelines();
+            runAfterAllPipelines();
+            return false;
 
         } else {
-            runBoundPipelines(roundEnv);
+
+            boolean generated = false;
+            generated |= runBoundPipelines(roundEnv);
+            generated |= runAfterRoundPipelines();
+            return generated;
 
         }
 
-
-        return false;
     }
 
-    private void runStandalonePipelines() {
+    private void runAfterAllPipelines() {
         StandalonePipelineContext pipelineContext = new StandalonePipelineContext(context);
-        configuration.standalonePipelines().forEach(pipeline -> pipeline.run(pipelineContext));
-
+        configuration.afterAllPipelines().forEach(pipeline -> pipeline.run(pipelineContext));
     }
 
-    private void runBoundPipelines(RoundEnvironment roundEnv) {
+    private boolean runAfterRoundPipelines() {
+        StandalonePipelineContext pipelineContext = new StandalonePipelineContext(context);
+
+        boolean generated = false;
+
+        for (StandalonePipeline pipeline : configuration.afterRoundPipelines()) {
+            generated |= pipeline.run(pipelineContext);
+        }
+
+        return generated;
+    }
+
+    private boolean runBoundPipelines(RoundEnvironment roundEnv) {
+
+        boolean generated = false;
 
         for (BoundPipeline<?> pipeline : configuration.boundPipelines()) {
 
             for (Element element : roundEnv.getElementsAnnotatedWith(pipeline.annotationType())) {
 
-                modelFactory.create(element).ifPresent(rawModel -> {
-                    Model indexed = context.modelRegistry().register(pipeline.kind(), rawModel);
-                    pipeline.run(new BoundPipelineContext(indexed, context));
-                });
+                Optional<Model> modelOptional = modelFactory.create(element);
+                if (modelOptional.isEmpty()) continue;
+                Model rawModel = modelOptional.get();
+                Model indexed = context.modelRegistry().register(pipeline.kind(), rawModel);
+                generated |= pipeline.run(new BoundPipelineContext(indexed, context));
 
             }
 
         }
+
+        return generated;
 
     }
 

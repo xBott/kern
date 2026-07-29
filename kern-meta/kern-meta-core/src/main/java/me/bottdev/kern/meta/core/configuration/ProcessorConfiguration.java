@@ -10,15 +10,18 @@ import java.util.stream.Collectors;
 public final class ProcessorConfiguration {
 
     private final List<BoundPipeline<?>> boundPipelines;
-    private final List<StandalonePipeline> standalonePipelines;
+    private final List<StandalonePipeline> afterAllPipelines;
+    private final List<StandalonePipeline> afterRoundPipelines;
     private final Set<String> supportedAnnotationTypes;
 
     public ProcessorConfiguration(
             List<BoundPipeline<?>> boundPipelines,
-            List<StandalonePipeline> standalonePipelines
+            List<StandalonePipeline> afterAllPipelines,
+            List<StandalonePipeline> afterRoundPipelines
     ) {
         this.boundPipelines = boundPipelines;
-        this.standalonePipelines = standalonePipelines;
+        this.afterAllPipelines = afterAllPipelines;
+        this.afterRoundPipelines = afterRoundPipelines;
         this.supportedAnnotationTypes = boundPipelines.stream().map(definition ->
                 definition.annotationType().getCanonicalName()
         ).collect(Collectors.toUnmodifiableSet());
@@ -28,8 +31,12 @@ public final class ProcessorConfiguration {
         return boundPipelines;
     }
 
-    public List<StandalonePipeline> standalonePipelines() {
-        return standalonePipelines;
+    public List<StandalonePipeline> afterAllPipelines() {
+        return afterAllPipelines;
+    }
+
+    public List<StandalonePipeline> afterRoundPipelines() {
+        return afterRoundPipelines;
     }
 
     public Set<String> supportedAnnotationTypes() {

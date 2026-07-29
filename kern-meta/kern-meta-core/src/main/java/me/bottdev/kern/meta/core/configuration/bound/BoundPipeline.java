@@ -5,25 +5,36 @@ import me.bottdev.kern.meta.core.models.Model;
 import me.bottdev.kern.meta.core.models.ModelKind;
 
 import java.lang.annotation.Annotation;
-import java.util.function.Consumer;
+import java.util.Iterator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public record BoundPipeline<M>(
+public record BoundPipeline<R>(
         ModelKind<?> kind,
         Class<? extends Annotation> annotationType,
-        Function<Model, Stream<M>> transform,
-        Consumer<M> consumer
+        Function<Model, Stream<R>> transform,
+        Predicate<R> predicate
 ) implements Pipeline<BoundPipelineContext> {
 
     @Override
-    public void run(BoundPipelineContext context) {
+    public boolean run(BoundPipelineContext context) {
 
         Model model = context.model();
-        if (model.kind() != kind) return;
-        if (model.annotation(annotationType).isEmpty()) return;
+        if (model.kind() != kind) return false;
+        if (model.annotation(annotationType).isEmpty()) return false;
 
-        transform.apply(model).forEach(consumer);
+        Stream<R> stream = transform.apply(model);
+        Iterator<R> iterator = stream.iterator();
+
+        boolean generated = false;
+
+        while (iterator.hasNext()) {
+            R representation = iterator.next();
+            generated |= predicate.test(representation);
+        }
+
+        return generated;
 
     }
 

@@ -9,6 +9,8 @@ public interface StandalonePipelineBuilder extends PipelineBuilder {
 
     StandalonePipelineBuilder validate(Consumer<StandaloneDiagnosticBuilder> rules);
 
-    void finishWith(Runnable runnable);
+    void generate(Runnable runnable);
+
+    void run(Runnable runnable);
 
 }

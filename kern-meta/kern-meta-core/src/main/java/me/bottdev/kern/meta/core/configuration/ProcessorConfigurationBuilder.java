@@ -9,12 +9,14 @@ import java.lang.annotation.Annotation;
 
 public interface ProcessorConfigurationBuilder {
 
-    <M extends Model, A extends Annotation> BoundPipelineBuilder<M> bound(
+    <M extends Model, A extends Annotation> BoundPipelineBuilder<M> select(
             ModelKind<M> kind,
             Class<A> annotationType
     );
 
-    StandalonePipelineBuilder standalone();
+    StandalonePipelineBuilder afterAll();
+
+    StandalonePipelineBuilder afterRound();
 
     ProcessorConfiguration build();
 

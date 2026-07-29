@@ -17,6 +17,8 @@ public interface BoundPipelineBuilder<M> extends PipelineBuilder {
 
     BoundPipelineBuilder<M> validate(Consumer<BoundDiagnosticBuilder<M>> rules);
 
-    void finishWith(Consumer<M> consumer);
+    void generate(Consumer<M> consumer);
+
+    void run(Consumer<M> consumer);
 
 }

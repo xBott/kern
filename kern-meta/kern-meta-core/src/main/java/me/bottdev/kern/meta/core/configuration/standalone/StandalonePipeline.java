@@ -5,13 +5,15 @@ import me.bottdev.kern.meta.core.configuration.Pipeline;
 import me.bottdev.kern.meta.core.diagnostic.DiagnosticResult;
 import me.bottdev.kern.meta.core.diagnostic.standalone.StandaloneDiagnosticBuilder;
 
+import java.util.function.Supplier;
+
 public record StandalonePipeline(
         StandaloneDiagnosticBuilder diagnosticBuilder,
-        Runnable runnable
+        Supplier<Boolean> supplier
 ) implements Pipeline<StandalonePipelineContext> {
 
     @Override
-    public void run(StandalonePipelineContext context) {
+    public boolean run(StandalonePipelineContext context) {
         DiagnosticResult result = diagnosticBuilder.build();
 
         if (result.hasWarnings()) {
@@ -20,10 +22,10 @@ public record StandalonePipeline(
 
         if (result.hasErrors()) {
             result.errors().forEach(error -> context.processing().logger().message(MessageType.ERROR, error.message()));
-            return;
+            return false;
         }
 
-        runnable.run();
+        return supplier.get();
 
     }
 

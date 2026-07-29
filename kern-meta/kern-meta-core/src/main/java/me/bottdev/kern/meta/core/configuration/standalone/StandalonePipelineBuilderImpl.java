@@ -19,14 +19,26 @@ public final class StandalonePipelineBuilderImpl implements StandalonePipelineBu
     }
 
     @Override
-    public void finishWith(Runnable runnable) {
-        StandalonePipeline pipeline = new StandalonePipeline(diagnosticBuilder, runnable);
+    public void generate(Runnable runnable) {
+        StandalonePipeline pipeline = new StandalonePipeline(diagnosticBuilder, () -> {
+            runnable.run();
+            return true;
+        });
+        sink.add(pipeline);
+    }
+
+    @Override
+    public void run(Runnable runnable) {
+        StandalonePipeline pipeline = new StandalonePipeline(diagnosticBuilder, () -> {
+            runnable.run();
+            return false;
+        });
         sink.add(pipeline);
     }
 
     @Override
     public void finish() {
-        finishWith(() -> {});
+        run(() -> {});
     }
 
 }
