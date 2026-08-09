@@ -12,7 +12,6 @@ import java.util.List;
 public interface DependencyAware<K> {
 
     /// Returns the unique key that identifies this object in the dependency graph.
-    @SuppressWarnings("unchecked")
     K dependencyKey();
 
     /// Returns the keys of objects this object directly depends on.

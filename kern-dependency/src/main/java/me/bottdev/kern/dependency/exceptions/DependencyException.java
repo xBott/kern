@@ -6,8 +6,4 @@ public class DependencyException extends Exception {
         super(message);
     }
 
-    public DependencyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

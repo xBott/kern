@@ -17,23 +17,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GraphDependencyResolverTest {
 
-    record Task(String id, List<DependencyRequest<String>> dependencies) implements DependencyAware<String> {
+    record Task(String id, List<SimpleDependencyRequest<String>> dependencies) implements DependencyAware<String> {
 
         static class Builder {
 
             private final String id;
-            private final List<DependencyRequest<String>> dependencies = new ArrayList<>();
+            private final List<SimpleDependencyRequest<String>> dependencies = new ArrayList<>();
 
             public Builder(String id) {
                 this.id = id;
             }
 
             public Builder dependsOn(String taskId, DependencyLink link, DependOrder order) {
-                dependencies.add(new DependencyRequest<>(taskId, link, order));
+                dependencies.add(new SimpleDependencyRequest<>(taskId, link, order));
                 return this;
             }
 
@@ -72,10 +73,10 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: no tasks - nothing to resolve")
-    void resolve_empty() throws DependencyException, CircularDependencyException {
+    void resolve_empty() throws DependencyException {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder().build();
-        ResolutionResult<Task> result = resolver.resolve(container);
+        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
 
         assertEquals(0, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(0, result.layers().size(), "Layers size is incorrect");
@@ -84,7 +85,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: single task - nothing to resolve")
-    void resolve_single() throws DependencyException, CircularDependencyException {
+    void resolve_single() throws DependencyException {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -92,7 +93,7 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult<Task> result = resolver.resolve(container);
+        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
 
         assertEquals(1, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(1, result.layers().size(), "Layers size is incorrect");
@@ -101,7 +102,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: multiple tasks depending on each other")
-    void resolve_linear() throws DependencyException, CircularDependencyException {
+    void resolve_linear() throws DependencyException {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -119,7 +120,7 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult<Task> result = resolver.resolve(container);
+        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
 
         assertEquals(3, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(3, result.layers().size(), "Layers size is incorrect");
@@ -128,7 +129,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: multiple tasks depending on each other with branching")
-    void resolve_branch() throws DependencyException, CircularDependencyException {
+    void resolve_branch() throws DependencyException {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -156,7 +157,7 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult<Task> result = resolver.resolve(container);
+        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
 
         assertEquals(5, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(4, result.layers().size(), "Layers size is incorrect");
@@ -165,7 +166,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: should throw if dependency is missing")
-    void resolve_throwsMissingDependency() {
+    void resolve_missingDependency() {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -175,13 +176,17 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        assertThrows(MissingDependencyException.class, () -> resolver.resolve(container));
-
+        ResolutionResult<String, Task> result = resolver.resolve(container);
+        assertThat(result)
+                .isInstanceOf(ResolutionResult.Failure.class);
+        ResolutionResult.Failure<String, Task> failure = (ResolutionResult.Failure<String, Task>) result;
+        assertThat(failure.diagnostics())
+                .containsExactly(new DependencyDiagnostic.Missing<>("test", "build"));
     }
 
     @Test
     @DisplayName("resolve: should throw circular dependency")
-    void resolve_throwsCircularDependency() {
+    void resolve_circularDependency() {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -201,7 +206,12 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        assertThrows(CircularDependencyException.class, () -> resolver.resolve(container));
+        ResolutionResult<String, Task> result = resolver.resolve(container);
+        assertThat(result)
+                .isInstanceOf(ResolutionResult.Failure.class);
+        ResolutionResult.Failure<String, Task> failure = (ResolutionResult.Failure<String, Task>) result;
+        assertThat(failure.diagnostics())
+                .containsExactly(new DependencyDiagnostic.Circular<>(List.of("a", "b", "c")));
 
     }
 

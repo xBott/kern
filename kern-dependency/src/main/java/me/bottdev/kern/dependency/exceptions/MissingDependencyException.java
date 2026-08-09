@@ -11,12 +11,6 @@ public class MissingDependencyException extends DependencyException {
         this.dependencyKey = dependencyKey;
     }
 
-    public <T, K> MissingDependencyException(T dependent, K dependencyKey, String message, Throwable cause) {
-      super(message, cause);
-      this.dependent = dependent;
-      this.dependencyKey = dependencyKey;
-    }
-
     @SuppressWarnings("unchecked")
     public <T> T getDependent() {
         return (T) dependent;
