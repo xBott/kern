@@ -3,11 +3,8 @@ package me.bottdev.kern.dependency.graph;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.containers.SimpleDependentContainer;
-import me.bottdev.kern.dependency.exceptions.DependencyException;
-import me.bottdev.kern.dependency.exceptions.MissingDependencyException;
 import me.bottdev.kern.struct.algorithms.cycle.CycleDetector;
 import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
-import me.bottdev.kern.struct.algorithms.sort.CircularDependencyException;
 import me.bottdev.kern.struct.algorithms.sort.KahnSorter;
 import me.bottdev.kern.struct.algorithms.sort.TopologicalSorter;
 import me.bottdev.kern.struct.paths.CyclePath;
@@ -75,7 +72,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: no tasks - nothing to resolve")
-    void resolve_empty() throws DependencyException {
+    void resolve_empty() {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder().build();
         ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
@@ -87,7 +84,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: single task - nothing to resolve")
-    void resolve_single() throws DependencyException {
+    void resolve_single() {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -104,7 +101,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: multiple tasks depending on each other")
-    void resolve_linear() throws DependencyException {
+    void resolve_linear() {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
@@ -131,7 +128,7 @@ class GraphDependencyResolverTest {
 
     @Test
     @DisplayName("resolve: multiple tasks depending on each other with branching")
-    void resolve_branch() throws DependencyException {
+    void resolve_branch() {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
