@@ -2,11 +2,12 @@ package me.bottdev.kern.dependency.versioned;
 
 import me.bottdev.kern.dependency.DependentContainer;
 import me.bottdev.kern.dependency.ResolutionResult;
+import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 
 /// Interface that defines a strategy of dependency resolution with support of dependency versions
 /// Should be used as a singleton.
 /// Resolution does not fail fast: every problem found (missing dependencies, version mismatches,
-/// version conflicts, cycles) is collected into a [ResolutionResult.Failure] instead of throwing
+/// version conflicts, cycles) is collected into a [DiagnosticResult.Failure] instead of throwing
 /// on the first one.
 public interface VersionedDependencyResolver {
 
@@ -14,6 +15,6 @@ public interface VersionedDependencyResolver {
     ///
     /// @param dependentContainer a container with [VersionedDependencyAware] objects
     /// @return resolution result
-    <K, T extends VersionedDependencyAware<K>> ResolutionResult<K, T> resolveVersioned(DependentContainer<K, T> dependentContainer);
+    <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolveVersioned(DependentContainer<K, T> dependentContainer);
 
 }

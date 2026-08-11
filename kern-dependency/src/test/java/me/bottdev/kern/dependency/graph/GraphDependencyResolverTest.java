@@ -1,5 +1,6 @@
 package me.bottdev.kern.dependency.graph;
 
+import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.containers.SimpleDependentContainer;
 import me.bottdev.kern.dependency.exceptions.DependencyException;
@@ -9,6 +10,7 @@ import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
 import me.bottdev.kern.struct.algorithms.sort.CircularDependencyException;
 import me.bottdev.kern.struct.algorithms.sort.KahnSorter;
 import me.bottdev.kern.struct.algorithms.sort.TopologicalSorter;
+import me.bottdev.kern.struct.paths.CyclePath;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,7 +78,7 @@ class GraphDependencyResolverTest {
     void resolve_empty() throws DependencyException {
 
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder().build();
-        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
+        ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
         assertEquals(0, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(0, result.layers().size(), "Layers size is incorrect");
@@ -93,7 +95,7 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
+        ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
         assertEquals(1, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(1, result.layers().size(), "Layers size is incorrect");
@@ -120,7 +122,7 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
+        ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
         assertEquals(3, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(3, result.layers().size(), "Layers size is incorrect");
@@ -157,7 +159,7 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult.Success<String, Task> result = resolver.resolve(container).orElseThrow();
+        ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
         assertEquals(5, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(4, result.layers().size(), "Layers size is incorrect");
@@ -176,12 +178,12 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult<String, Task> result = resolver.resolve(container);
+        DiagnosticResult<ResolutionResult<String, Task>> result = resolver.resolve(container);
         assertThat(result)
-                .isInstanceOf(ResolutionResult.Failure.class);
-        ResolutionResult.Failure<String, Task> failure = (ResolutionResult.Failure<String, Task>) result;
+                .isInstanceOf(DiagnosticResult.Failure.class);
+        DiagnosticResult.Failure<?> failure = (DiagnosticResult.Failure<?>) result;
         assertThat(failure.diagnostics())
-                .containsExactly(new DependencyDiagnostic.Missing<>("test", "build"));
+                .containsExactly(DependencyDiagnostic.missing("test", "build"));
     }
 
     @Test
@@ -206,12 +208,12 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        ResolutionResult<String, Task> result = resolver.resolve(container);
+        DiagnosticResult<ResolutionResult<String, Task>> result = resolver.resolve(container);
         assertThat(result)
-                .isInstanceOf(ResolutionResult.Failure.class);
-        ResolutionResult.Failure<String, Task> failure = (ResolutionResult.Failure<String, Task>) result;
+                .isInstanceOf(DiagnosticResult.Failure.class);
+        DiagnosticResult.Failure<?> failure = (DiagnosticResult.Failure<?>) result;
         assertThat(failure.diagnostics())
-                .containsExactly(new DependencyDiagnostic.Circular<>(List.of("a", "b", "c")));
+                .containsExactly(DependencyDiagnostic.circular(new CyclePath<>("a", List.of("a", "b", "c"))));
 
     }
 

@@ -1,6 +1,10 @@
 package me.bottdev.kern.dependency.graph;
 
 import lombok.RequiredArgsConstructor;
+import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticsBuilder;
+import me.bottdev.kern.commons.diagnostic.ListDiagnostics;
+import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyAware;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyRequest;
@@ -12,6 +16,7 @@ import me.bottdev.kern.struct.graph.EndpointPairs;
 import me.bottdev.kern.struct.graph.Graph;
 import me.bottdev.kern.struct.graph.adjacency.AdjacencyListGraphBuilder;
 import me.bottdev.kern.struct.graph.endpoints.Directed;
+import me.bottdev.kern.struct.paths.CyclePath;
 import me.bottdev.kern.version.VersionRange;
 
 import java.util.ArrayList;
@@ -26,7 +31,9 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
     private final TopologicalSorter sorter;
 
-    private <K, T extends DependencyAware<K>> Map<K, T> buildMap(DependentContainer<K, T> dependentContainer) {
+    private <K, T extends DependencyAware<K>> Map<K, T> buildMap(
+            DependentContainer<K, T> dependentContainer
+    ) {
         Map<K, T> dependentMap = new HashMap<>();
         dependentContainer.dependents().forEach(dependent ->
                 dependentMap.put(dependent.dependencyKey(), dependent)
@@ -40,7 +47,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     private <K, T extends DependencyAware<K>> Graph<K, Directed<K>> buildGraph(
             DependentContainer<K, T> dependentContainer,
             Map<K, T> dependentMap,
-            List<DependencyDiagnostic<K>> diagnostics
+            DiagnosticsBuilder diagnosticsBuilder
     ) {
 
         AdjacencyListGraphBuilder<K, Directed<K>> builder = new AdjacencyListGraphBuilder<>();
@@ -59,7 +66,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                 T dependency = dependentMap.get(dependencyKey);
 
                 if (dependency == null) {
-                    diagnostics.add(new DependencyDiagnostic.Missing<>(dependentKey, dependencyKey));
+                    diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
                     continue;
                 }
 
@@ -82,7 +89,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     private <K, T extends VersionedDependencyAware<K>> Graph<K, Directed<K>> buildVersionedGraph(
             DependentContainer<K, T> dependentContainer,
             Map<K, T> dependentMap,
-            List<DependencyDiagnostic<K>> diagnostics
+            DiagnosticsBuilder diagnosticsBuilder
     ) {
 
         AdjacencyListGraphBuilder<K, Directed<K>> builder = new AdjacencyListGraphBuilder<>();
@@ -100,13 +107,13 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
                 if (dependency == null) {
                     if (link == DependencyLink.OPTIONAL) continue;
-                    diagnostics.add(new DependencyDiagnostic.Missing<>(dependentKey, dependencyKey));
+                    diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
                     continue;
                 }
 
                 VersionRange versionRange = request.versionRange();
                 if (versionRange != null && !versionRange.satisfies(dependency.getVersion())) {
-                    diagnostics.add(new DependencyDiagnostic.VersionMismatch<>(
+                    diagnosticsBuilder.append(DependencyDiagnostic.versionMismatch(
                             dependentKey,
                             dependencyKey,
                             versionRange,
@@ -132,8 +139,9 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     /// Detects requests on the same dependency key whose version ranges don't overlap,
     /// regardless of what version is actually resolved. E.g. A requires foo>=2.0 while
     /// B requires foo<1.0 — that's a conflict even before checking any real foo version.
-    private <K, T extends VersionedDependencyAware<K>> List<DependencyDiagnostic<K>> detectVersionConflicts(
-            DependentContainer<K, T> dependentContainer
+    private <K, T extends VersionedDependencyAware<K>> void detectVersionConflicts(
+            DependentContainer<K, T> dependentContainer,
+            DiagnosticsBuilder diagnosticsBuilder
     ) {
 
         Map<K, List<DependencyDiagnostic.VersionConflict.Entry<K>>> byDependency = new HashMap<>();
@@ -150,8 +158,6 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
             }
         }
 
-        List<DependencyDiagnostic<K>> conflicts = new ArrayList<>();
-
         for (Map.Entry<K, List<DependencyDiagnostic.VersionConflict.Entry<K>>> e : byDependency.entrySet()) {
             List<DependencyDiagnostic.VersionConflict.Entry<K>> entries = e.getValue();
             if (entries.size() < 2) continue;
@@ -162,18 +168,19 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
             }
 
             if (intersection == null || intersection.isEmpty()) {
-                conflicts.add(new DependencyDiagnostic.VersionConflict<>(e.getKey(), entries));
+                diagnosticsBuilder.append(DependencyDiagnostic.versionConflict(e.getKey(), entries));
             }
+
         }
 
-        return conflicts;
     }
 
     /// Attempts the topological sort, converting a thrown [CircularDependencyException]
     /// into a [DependencyDiagnostic.Circular] instead of propagating it.
-    private <K, T extends DependencyAware<K>> ResolutionResult<K, T> sortAndConvert(
+    private <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> sortAndConvert(
             Graph<K, Directed<K>> graph,
-            Map<K, T> dependentMap
+            Map<K, T> dependentMap,
+            DiagnosticsBuilder diagnosticsBuilder
     ) {
         try {
             TopologicalSortResult<K> sortedKeys = sorter.sort(graph);
@@ -183,47 +190,56 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                     .toList();
 
             List<T> ordered = layers.stream().flatMap(Collection::stream).toList();
+            ResolutionResult<K, T> resolutionResult = new ResolutionResult<>(ordered, layers);
 
-            return new ResolutionResult.Success<>(ordered, layers);
+            return DiagnosticResult.success(resolutionResult);
 
         } catch (CircularDependencyException ex) {
-            List<K> cycle = ex.<K>getCycleResult().nodes();
-            return new ResolutionResult.Failure<>(List.of(new DependencyDiagnostic.Circular<>(cycle)));
+            CyclePath<K> cycle = ex.getCycleResult();
+            diagnosticsBuilder.append(DependencyDiagnostic.circular(cycle));
+            return DiagnosticResult.failure(diagnosticsBuilder.build());
 
         }
 
     }
 
     @Override
-    public <K, T extends DependencyAware<K>> ResolutionResult<K, T> resolve(
+    public <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolve(
             DependentContainer<K, T> dependentContainer
     ) {
 
-        Map<K, T> dependentMap = buildMap(dependentContainer);
-        List<DependencyDiagnostic<K>> diagnostics = new ArrayList<>();
-        Graph<K, Directed<K>> graph = buildGraph(dependentContainer, dependentMap, diagnostics);
+        DiagnosticsBuilder diagnosticsBuilder = ListDiagnostics.builder();
 
-        if (!diagnostics.isEmpty()) {
-            return new ResolutionResult.Failure<>(diagnostics);
+        Map<K, T> dependentMap = buildMap(dependentContainer);
+        Graph<K, Directed<K>> graph = buildGraph(dependentContainer, dependentMap, diagnosticsBuilder);
+
+        if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
+            return DiagnosticResult.failure(diagnosticsBuilder.build());
         }
 
-        return sortAndConvert(graph, dependentMap);
+        return sortAndConvert(graph, dependentMap, diagnosticsBuilder);
     }
 
     @Override
-    public <K, T extends VersionedDependencyAware<K>> ResolutionResult<K, T> resolveVersioned(
+    public <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolveVersioned(
             DependentContainer<K, T> dependentContainer
     ) {
 
-        Map<K, T> dependentMap = buildMap(dependentContainer);
-        List<DependencyDiagnostic<K>> diagnostics = new ArrayList<>(detectVersionConflicts(dependentContainer));
-        Graph<K, Directed<K>> graph = buildVersionedGraph(dependentContainer, dependentMap, diagnostics);
+        DiagnosticsBuilder diagnosticsBuilder = ListDiagnostics.builder();
 
-        if (!diagnostics.isEmpty()) {
-            return new ResolutionResult.Failure<>(diagnostics);
+        detectVersionConflicts(dependentContainer, diagnosticsBuilder);
+        if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
+            return DiagnosticResult.failure(diagnosticsBuilder.build());
         }
 
-        return sortAndConvert(graph, dependentMap);
+        Map<K, T> dependentMap = buildMap(dependentContainer);
+        Graph<K, Directed<K>> graph = buildVersionedGraph(dependentContainer, dependentMap, diagnosticsBuilder);
+
+        if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
+            return DiagnosticResult.failure(diagnosticsBuilder.build());
+        }
+
+        return sortAndConvert(graph, dependentMap, diagnosticsBuilder);
     }
 
 }
