@@ -5,10 +5,8 @@ import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.ToString;
 
 @Getter
-@ToString
 @EqualsAndHashCode
 public class VersionRange {
 
@@ -181,6 +179,21 @@ public class VersionRange {
             if (a.isEqual(b)) return 0;
             return a.isGreaterThan(b) ? 1 : -1;
         }
+    }
+
+    @Override
+    public String toString() {
+        if (comparatorSets.isEmpty()) {
+            return "*";
+        }
+
+        return comparatorSets.stream()
+                .filter(andSet -> !andSet.isEmpty())
+                .map(andSet -> andSet.stream()
+                        .map(Object::toString)
+                        .collect(java.util.stream.Collectors.joining(" ")))
+                .filter(str -> !str.isEmpty())
+                .collect(java.util.stream.Collectors.joining(" || "));
     }
 
 }

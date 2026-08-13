@@ -6,7 +6,6 @@ import lombok.NonNull;
 import lombok.ToString;
 
 @Getter
-@ToString
 @EqualsAndHashCode
 public class VersionComparator {
 
@@ -29,4 +28,8 @@ public class VersionComparator {
         };
     }
 
+    @Override
+    public String toString() {
+        return operator + version;
+    }
 }
