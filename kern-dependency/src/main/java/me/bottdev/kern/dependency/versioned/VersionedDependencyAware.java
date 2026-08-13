@@ -11,7 +11,7 @@ import java.util.List;
 public interface VersionedDependencyAware<K> extends DependencyAware<K> {
 
     /// Returns the version of this object.
-    SemVersion getVersion();
+    SemVersion version();
 
     /// Returns the versioned dependency requests of this object.
     List<VersionedDependencyRequest<K>> getVersionedDependencies();

@@ -112,12 +112,12 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                 }
 
                 VersionRange versionRange = request.versionRange();
-                if (versionRange != null && !versionRange.satisfies(dependency.getVersion())) {
+                if (versionRange != null && !versionRange.satisfies(dependency.version())) {
                     diagnosticsBuilder.append(DependencyDiagnostic.versionMismatch(
                             dependentKey,
                             dependencyKey,
                             versionRange,
-                            dependency.getVersion()
+                            dependency.version()
                     ));
                     continue;
                 }
