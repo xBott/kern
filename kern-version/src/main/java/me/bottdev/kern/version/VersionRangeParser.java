@@ -12,6 +12,10 @@ public class VersionRangeParser {
 
     public static VersionRange parse(@NonNull String rangeStr) {
 
+        if (rangeStr.equalsIgnoreCase("*")) {
+            return VersionRange.any();
+        }
+
         if (rangeStr.trim().isEmpty()) {
             throw new IllegalArgumentException("Range string cannot be empty");
         }
