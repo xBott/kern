@@ -77,8 +77,17 @@ class GraphDependencyResolverTest {
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder().build();
         ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
-        assertEquals(0, result.ordered().size(), "Ordered size is incorrect");
-        assertEquals(0, result.layers().size(), "Layers size is incorrect");
+        assertThat(result)
+                .satisfies(r -> {
+                    List<Task> ordered = r.ordered();
+                    assertThat(ordered)
+                            .hasSize(0);
+                })
+                .satisfies(r -> {
+                    List<List<Task>> layers = r.layers();
+                    assertThat(layers)
+                            .hasSize(0);
+                });
 
     }
 
@@ -94,8 +103,19 @@ class GraphDependencyResolverTest {
 
         ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
-        assertEquals(1, result.ordered().size(), "Ordered size is incorrect");
-        assertEquals(1, result.layers().size(), "Layers size is incorrect");
+        assertThat(result)
+                .satisfies(r -> {
+                    List<Task> ordered = r.ordered();
+                    assertThat(ordered)
+                            .hasSize(1)
+                            .extracting(Task::id)
+                            .containsExactly("build");
+                })
+                .satisfies(r -> {
+                    List<List<Task>> layers = r.layers();
+                    assertThat(layers)
+                            .hasSize(1);
+                });
 
     }
 
@@ -121,8 +141,19 @@ class GraphDependencyResolverTest {
 
         ResolutionResult<String, Task> result = resolver.resolve(container).unwrapOrThrow();
 
-        assertEquals(3, result.ordered().size(), "Ordered size is incorrect");
-        assertEquals(3, result.layers().size(), "Layers size is incorrect");
+        assertThat(result)
+                .satisfies(r -> {
+                    List<Task> ordered = r.ordered();
+                    assertThat(ordered)
+                            .hasSize(3)
+                            .extracting(Task::id)
+                            .containsExactly("build", "test", "publish");
+                })
+                .satisfies(r -> {
+                    List<List<Task>> layers = r.layers();
+                    assertThat(layers)
+                            .hasSize(3);
+                });
 
     }
 
@@ -161,6 +192,20 @@ class GraphDependencyResolverTest {
         assertEquals(5, result.ordered().size(), "Ordered size is incorrect");
         assertEquals(4, result.layers().size(), "Layers size is incorrect");
 
+        assertThat(result)
+                .satisfies(r -> {
+                    List<Task> ordered = r.ordered();
+                    assertThat(ordered)
+                            .hasSize(5)
+                            .extracting(Task::id)
+                            .containsExactly("build", "test", "copyJar", "publish", "summarize");
+                })
+                .satisfies(r -> {
+                    List<List<Task>> layers = r.layers();
+                    assertThat(layers)
+                            .hasSize(4);
+                });
+
     }
 
     @Test
@@ -190,17 +235,17 @@ class GraphDependencyResolverTest {
         DependentContainer<String, Task> container = SimpleDependentContainer.<String, Task>builder()
                 .add(
                         task("a")
-                                .dependsOn("b", DependencyLink.REQUIRED, DependOrder.AFTER)
-                                .build()
-                )
-                .add(
-                        task("b")
                                 .dependsOn("c", DependencyLink.REQUIRED, DependOrder.AFTER)
                                 .build()
                 )
                 .add(
-                        task("c")
+                        task("b")
                                 .dependsOn("a", DependencyLink.REQUIRED, DependOrder.AFTER)
+                                .build()
+                )
+                .add(
+                        task("c")
+                                .dependsOn("b", DependencyLink.REQUIRED, DependOrder.AFTER)
                                 .build()
                 )
                 .build();
