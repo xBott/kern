@@ -29,7 +29,7 @@ class VersionRangeTest {
             List<List<VersionComparator>> sets = List.of(List.of(comp));
 
             VersionRange range = new VersionRange(sets);
-            assertThat(range.getComparatorSets()).containsExactlyElementsOf(sets);
+            assertThat(range.comparatorSets()).containsExactlyElementsOf(sets);
         }
 
     }

@@ -17,10 +17,10 @@ class VersionRangeParserTest {
         @DisplayName("parse: parses single comparator")
         void parse_single() {
             VersionRange range = VersionRangeParser.parse(">=1.2.3");
-            assertThat(range.getComparatorSets()).hasSize(1);
-            assertThat(range.getComparatorSets().get(0)).hasSize(1);
+            assertThat(range.comparatorSets()).hasSize(1);
+            assertThat(range.comparatorSets().get(0)).hasSize(1);
             
-            VersionComparator comp = range.getComparatorSets().get(0).get(0);
+            VersionComparator comp = range.comparatorSets().get(0).get(0);
             assertThat(comp.getOperator()).isEqualTo(">=");
             assertThat(comp.getVersion()).isEqualTo(new SemVersion(1, 2, 3, null, null));
         }
@@ -29,17 +29,17 @@ class VersionRangeParserTest {
         @DisplayName("parse: parses multiple AND comparators")
         void parse_multipleAnd() {
             VersionRange range = VersionRangeParser.parse(">=1.0.0 <2.0.0");
-            assertThat(range.getComparatorSets()).hasSize(1);
-            assertThat(range.getComparatorSets().get(0)).hasSize(2);
+            assertThat(range.comparatorSets()).hasSize(1);
+            assertThat(range.comparatorSets().get(0)).hasSize(2);
         }
 
         @Test
         @DisplayName("parse: parses multiple OR sets")
         void parse_multipleOr() {
             VersionRange range = VersionRangeParser.parse("<1.0.0 || >=2.0.0");
-            assertThat(range.getComparatorSets()).hasSize(2);
-            assertThat(range.getComparatorSets().get(0)).hasSize(1);
-            assertThat(range.getComparatorSets().get(1)).hasSize(1);
+            assertThat(range.comparatorSets()).hasSize(2);
+            assertThat(range.comparatorSets().get(0)).hasSize(1);
+            assertThat(range.comparatorSets().get(1)).hasSize(1);
         }
 
     }

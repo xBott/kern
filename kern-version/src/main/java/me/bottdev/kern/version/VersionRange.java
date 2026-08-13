@@ -2,18 +2,26 @@ package me.bottdev.kern.version;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import java.util.stream.Collectors;
+
 import lombok.NonNull;
 
-@Getter
-@EqualsAndHashCode
-public class VersionRange {
+public record VersionRange(List<List<VersionComparator>> comparatorSets) {
 
-    private final List<List<VersionComparator>> comparatorSets;
+    /// Creates a new version range, which does not satisfy any version.
+    public static VersionRange empty() {
+        return new VersionRange(List.of());
+    }
+
+    /// Creates a new version range, which satisfies any version.
+    public static VersionRange any() {
+        return new VersionRange(List.of(List.of()));
+    }
 
     public VersionRange(@NonNull List<List<VersionComparator>> comparatorSets) {
-        this.comparatorSets = List.copyOf(comparatorSets);
+        this.comparatorSets = comparatorSets.stream()
+                .map(List::copyOf)
+                .toList();
     }
 
     public boolean satisfies(@NonNull SemVersion version) {
@@ -39,6 +47,12 @@ public class VersionRange {
     /// OR-set of comparator groups means nothing ever matches.
     public boolean isEmpty() {
         return comparatorSets.isEmpty();
+    }
+
+    /// True if this range is always satisfied by any version (e.g. the result of
+    /// intersecting two ranges with no overlap).
+    public boolean isAny() {
+        return comparatorSets.size() == 1 && comparatorSets.getFirst().isEmpty();
     }
 
     /// Intersects this range with `other`, returning a new range that is satisfied only
@@ -181,9 +195,14 @@ public class VersionRange {
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
-        if (comparatorSets.isEmpty()) {
+        if (isEmpty()) {
+            return "∅";
+        }
+
+        if (isAny()) {
             return "*";
         }
 
@@ -191,9 +210,9 @@ public class VersionRange {
                 .filter(andSet -> !andSet.isEmpty())
                 .map(andSet -> andSet.stream()
                         .map(Object::toString)
-                        .collect(java.util.stream.Collectors.joining(" ")))
+                        .collect(Collectors.joining(" ")))
                 .filter(str -> !str.isEmpty())
-                .collect(java.util.stream.Collectors.joining(" || "));
+                .collect(Collectors.joining(" || "));
     }
 
 }
