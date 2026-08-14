@@ -18,6 +18,14 @@ public record VersionRange(List<List<VersionComparator>> comparatorSets) {
         return new VersionRange(List.of(List.of()));
     }
 
+    public static VersionRange intersectAll(@NonNull List<VersionRange> ranges) {
+        VersionRange intersection = ranges.getFirst();
+        for (int i = 1; i < ranges.size(); i++) {
+            intersection = intersection.intersect(ranges.get(i));
+        }
+        return intersection;
+    }
+
     public VersionRange(@NonNull List<List<VersionComparator>> comparatorSets) {
         this.comparatorSets = comparatorSets.stream()
                 .map(List::copyOf)
