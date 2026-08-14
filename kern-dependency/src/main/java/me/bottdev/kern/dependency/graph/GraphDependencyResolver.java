@@ -1,11 +1,12 @@
 package me.bottdev.kern.dependency.graph;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import me.bottdev.kern.commons.diagnostic.DiagnosticType;
 import me.bottdev.kern.commons.diagnostic.DiagnosticsBuilder;
 import me.bottdev.kern.commons.diagnostic.ListDiagnostics;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
+import me.bottdev.kern.dependency.versioned.VersionConflictDetector;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyAware;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyRequest;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyResolver;
@@ -19,53 +20,39 @@ import me.bottdev.kern.struct.graph.endpoints.Directed;
 import me.bottdev.kern.struct.paths.CyclePath;
 import me.bottdev.kern.version.VersionRange;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /// Implementation of [DependencyResolver] and [VersionedDependencyResolver] that uses a graph and Topological Sort.
-@RequiredArgsConstructor
 public class GraphDependencyResolver implements DependencyResolver, VersionedDependencyResolver {
 
     private final TopologicalSorter sorter;
 
-    private <K, T extends DependencyAware<K>> Map<K, T> buildMap(
-            DependentContainer<K, T> dependentContainer
-    ) {
-        Map<K, T> dependentMap = new HashMap<>();
-        dependentContainer.dependents().forEach(dependent ->
-                dependentMap.put(dependent.dependencyKey(), dependent)
-        );
-
-        return dependentMap;
+    public GraphDependencyResolver(@NonNull TopologicalSorter sorter) {
+        this.sorter = sorter;
     }
 
     /// Builds the graph, skipping edges for missing dependencies rather than throwing.
     /// Any missing dependency is appended to `diagnostics` instead.
     private <K, T extends DependencyAware<K>> Graph<K, Directed<K>> buildGraph(
             DependentContainer<K, T> dependentContainer,
-            Map<K, T> dependentMap,
             DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
 
         AdjacencyListGraphBuilder<K, Directed<K>> builder = new AdjacencyListGraphBuilder<>();
 
-        for (T dependent : dependentContainer.dependents()) {
+        for (T dependent : dependentContainer.values()) {
 
             K dependentKey = dependent.dependencyKey();
             builder.addNode(dependentKey);
 
             for (DependencyRequest<K> request : dependent.getDependencies()) {
 
-                DependencyLink link = request.link();
-                if (link == DependencyLink.OPTIONAL) continue;
-
                 K dependencyKey = request.key();
-                T dependency = dependentMap.get(dependencyKey);
+                T dependency = dependentContainer.get(dependencyKey);
+                DependencyLink link = request.link();
 
-                if (dependency == null) {
+                if (dependency == null && link == DependencyLink.REQUIRED) {
                     diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
                     continue;
                 }
@@ -88,13 +75,12 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     /// actual resolved version. Mismatched edges are skipped and reported, not thrown.
     private <K, T extends VersionedDependencyAware<K>> Graph<K, Directed<K>> buildVersionedGraph(
             DependentContainer<K, T> dependentContainer,
-            Map<K, T> dependentMap,
             DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
 
         AdjacencyListGraphBuilder<K, Directed<K>> builder = new AdjacencyListGraphBuilder<>();
 
-        for (T dependent : dependentContainer.dependents()) {
+        for (T dependent : dependentContainer.values()) {
 
             K dependentKey = dependent.dependencyKey();
             builder.addNode(dependentKey);
@@ -103,7 +89,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
                 DependencyLink link = request.link();
                 K dependencyKey = request.key();
-                T dependency = dependentMap.get(dependencyKey);
+                T dependency = dependentContainer.get(dependencyKey);
 
                 if (dependency == null) {
                     if (link == DependencyLink.OPTIONAL) continue;
@@ -136,57 +122,18 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
         return builder.immutable();
     }
 
-    /// Detects requests on the same dependency key whose version ranges don't overlap,
-    /// regardless of what version is actually resolved. E.g. A requires foo>=2.0 while
-    /// B requires foo<1.0 — that's a conflict even before checking any real foo version.
-    private <K, T extends VersionedDependencyAware<K>> void detectVersionConflicts(
-            DependentContainer<K, T> dependentContainer,
-            DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
-    ) {
-
-        Map<K, List<DependencyDiagnostic.VersionConflict.Entry<K>>> byDependency = new HashMap<>();
-
-        for (T dependent : dependentContainer.dependents()) {
-            for (VersionedDependencyRequest<K> request : dependent.getVersionedDependencies()) {
-
-                VersionRange range = request.versionRange();
-                if (range == null) continue;
-
-                byDependency
-                        .computeIfAbsent(request.key(), _ -> new ArrayList<>())
-                        .add(new DependencyDiagnostic.VersionConflict.Entry<>(dependent.dependencyKey(), range));
-            }
-        }
-
-        for (Map.Entry<K, List<DependencyDiagnostic.VersionConflict.Entry<K>>> e : byDependency.entrySet()) {
-            List<DependencyDiagnostic.VersionConflict.Entry<K>> entries = e.getValue();
-            if (entries.size() < 2) continue;
-
-            VersionRange intersection = entries.getFirst().range();
-            for (int i = 1; i < entries.size() && intersection != null; i++) {
-                intersection = intersection.intersect(entries.get(i).range());
-            }
-
-            if (intersection == null || intersection.isEmpty()) {
-                diagnosticsBuilder.append(DependencyDiagnostic.versionConflict(e.getKey(), entries));
-            }
-
-        }
-
-    }
-
     /// Attempts the topological sort, converting a thrown [CircularDependencyException]
     /// into a [DependencyDiagnostic.Circular] instead of propagating it.
     private <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> sortAndConvert(
             Graph<K, Directed<K>> graph,
-            Map<K, T> dependentMap,
+            DependentContainer<K, T> dependentContainer,
             DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
         try {
             TopologicalSortResult<K> sortedKeys = sorter.sort(graph);
 
             List<List<T>> layers = sortedKeys.layers().stream()
-                    .map(layer -> layer.stream().map(dependentMap::get).toList())
+                    .map(layer -> layer.stream().map(dependentContainer::get).toList())
                     .toList();
 
             List<T> ordered = layers.stream().flatMap(Collection::stream).toList();
@@ -195,7 +142,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
             return DiagnosticResult.success(resolutionResult);
 
         } catch (CircularDependencyException ex) {
-            CyclePath<K> cycle = ex.getCycleResult();
+            CyclePath<K> cycle = ex.getCyclePath();
             diagnosticsBuilder.append(DependencyDiagnostic.circular(cycle));
             return DiagnosticResult.failure(diagnosticsBuilder.build());
 
@@ -208,16 +155,17 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
             DependentContainer<K, T> dependentContainer
     ) {
 
+        if (dependentContainer.isEmpty()) return DiagnosticResult.success(ResolutionResult.empty());
+
         DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder = ListDiagnostics.builder();
 
-        Map<K, T> dependentMap = buildMap(dependentContainer);
-        Graph<K, Directed<K>> graph = buildGraph(dependentContainer, dependentMap, diagnosticsBuilder);
+        Graph<K, Directed<K>> graph = buildGraph(dependentContainer, diagnosticsBuilder);
 
         if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
             return DiagnosticResult.failure(diagnosticsBuilder.build());
         }
 
-        return sortAndConvert(graph, dependentMap, diagnosticsBuilder);
+        return sortAndConvert(graph, dependentContainer, diagnosticsBuilder);
     }
 
     @Override
@@ -225,21 +173,22 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
             DependentContainer<K, T> dependentContainer
     ) {
 
+        if (dependentContainer.isEmpty()) return DiagnosticResult.success(ResolutionResult.empty());
+
         DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder = ListDiagnostics.builder();
 
-        detectVersionConflicts(dependentContainer, diagnosticsBuilder);
+        VersionConflictDetector.detect(dependentContainer.values(), diagnosticsBuilder);
         if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
             return DiagnosticResult.failure(diagnosticsBuilder.build());
         }
 
-        Map<K, T> dependentMap = buildMap(dependentContainer);
-        Graph<K, Directed<K>> graph = buildVersionedGraph(dependentContainer, dependentMap, diagnosticsBuilder);
+        Graph<K, Directed<K>> graph = buildVersionedGraph(dependentContainer, diagnosticsBuilder);
 
         if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
             return DiagnosticResult.failure(diagnosticsBuilder.build());
         }
 
-        return sortAndConvert(graph, dependentMap, diagnosticsBuilder);
+        return sortAndConvert(graph, dependentContainer, diagnosticsBuilder);
     }
 
 }
