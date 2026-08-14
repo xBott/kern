@@ -2,6 +2,7 @@ package me.bottdev.kern.dependency;
 
 import me.bottdev.kern.commons.diagnostic.Diagnostic;
 import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.dependency.versioned.VersionConflictEntry;
 import me.bottdev.kern.struct.paths.CyclePath;
 import me.bottdev.kern.version.SemVersion;
 import me.bottdev.kern.version.VersionRange;
@@ -15,7 +16,8 @@ public sealed interface DependencyDiagnostic extends Diagnostic permits
         DependencyDiagnostic.Missing,
         DependencyDiagnostic.VersionMismatch,
         DependencyDiagnostic.VersionConflict,
-        DependencyDiagnostic.Circular
+        DependencyDiagnostic.Circular,
+        DependencyDiagnostic.Duplicate
 {
 
     static <K> DependencyDiagnostic missing(
@@ -26,17 +28,17 @@ public sealed interface DependencyDiagnostic extends Diagnostic permits
     }
 
     static <K> DependencyDiagnostic versionMismatch(
-            @NonNull K dependent,
+            @NonNull K dependentKey,
             @NonNull K dependencyKey,
             @NonNull VersionRange required,
             @NonNull SemVersion actual
     ) {
-        return new VersionMismatch<>(dependent, dependencyKey, required, actual);
+        return new VersionMismatch<>(dependentKey, dependencyKey, required, actual);
     }
 
     static <K> DependencyDiagnostic versionConflict(
             @NonNull K dependencyKey,
-            @NonNull List<VersionConflict.Entry<K>> entries
+            @NonNull List<VersionConflictEntry<K>> entries
     ) {
         return new VersionConflict<>(dependencyKey, entries);
     }
@@ -45,6 +47,12 @@ public sealed interface DependencyDiagnostic extends Diagnostic permits
             @NonNull CyclePath<K> cycle
     ) {
         return new Circular<>(cycle);
+    }
+
+    static <K> DependencyDiagnostic duplicate(
+            @NonNull K dependencyKey
+    ) {
+        return new Duplicate<>(dependencyKey);
     }
 
     record Missing<K>(K dependent, K missingKey) implements DependencyDiagnostic {
@@ -61,7 +69,7 @@ public sealed interface DependencyDiagnostic extends Diagnostic permits
     }
 
     record VersionMismatch<K>(
-            K dependent,
+            K dependentKey,
             K dependencyKey,
             VersionRange required,
             SemVersion actual
@@ -74,17 +82,15 @@ public sealed interface DependencyDiagnostic extends Diagnostic permits
 
         @Override
         public String message() {
-            return "Version mismatch: '" + dependent + "' requires '" + dependencyKey +
+            return "Version mismatch: '" + dependentKey + "' requires '" + dependencyKey +
                     "' in range " + required + ", but found " + actual;
         }
     }
 
     record VersionConflict<K>(
             K dependencyKey,
-            List<Entry<K>> entries
+            List<VersionConflictEntry<K>> entries
     ) implements DependencyDiagnostic {
-
-        public record Entry<K>(K requesterKey, VersionRange range) {}
 
         @Override
         public DiagnosticType type() {
@@ -113,6 +119,19 @@ public sealed interface DependencyDiagnostic extends Diagnostic permits
             return "Circular dependency: " + cycle.toString();
         }
 
+    }
+
+    record Duplicate<K>(K dependencyKey) implements DependencyDiagnostic {
+
+        @Override
+        public DiagnosticType type() {
+            return DiagnosticType.ERROR;
+        }
+
+        @Override
+        public String message() {
+            return "Found duplicate entry: " + dependencyKey;
+        }
     }
 
 }
