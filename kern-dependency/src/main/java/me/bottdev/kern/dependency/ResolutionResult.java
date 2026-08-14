@@ -17,6 +17,10 @@ public record ResolutionResult<K, T extends DependencyAware<K>>(
         List<List<T>> layers
 ) {
 
+    public static <K, T extends DependencyAware<K>> ResolutionResult<K, T> empty() {
+        return new ResolutionResult<>(List.of(), List.of());
+    }
+
     @NonNull
     @Override
     public String toString() {
