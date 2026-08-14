@@ -38,6 +38,10 @@ public class ListDiagnostics<D extends Diagnostic> implements Diagnostics<D> {
         return new Builder<>();
     }
 
+    public static <D extends Diagnostic> ListDiagnostics<D> empty() {
+        return new ListDiagnostics<>(List.of());
+    }
+
     private final List<D> items;
 
     public ListDiagnostics(List<D> items) {
