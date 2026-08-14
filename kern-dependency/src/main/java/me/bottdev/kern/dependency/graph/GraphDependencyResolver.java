@@ -47,7 +47,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     private <K, T extends DependencyAware<K>> Graph<K, Directed<K>> buildGraph(
             DependentContainer<K, T> dependentContainer,
             Map<K, T> dependentMap,
-            DiagnosticsBuilder diagnosticsBuilder
+            DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
 
         AdjacencyListGraphBuilder<K, Directed<K>> builder = new AdjacencyListGraphBuilder<>();
@@ -89,7 +89,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     private <K, T extends VersionedDependencyAware<K>> Graph<K, Directed<K>> buildVersionedGraph(
             DependentContainer<K, T> dependentContainer,
             Map<K, T> dependentMap,
-            DiagnosticsBuilder diagnosticsBuilder
+            DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
 
         AdjacencyListGraphBuilder<K, Directed<K>> builder = new AdjacencyListGraphBuilder<>();
@@ -141,7 +141,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     /// B requires foo<1.0 — that's a conflict even before checking any real foo version.
     private <K, T extends VersionedDependencyAware<K>> void detectVersionConflicts(
             DependentContainer<K, T> dependentContainer,
-            DiagnosticsBuilder diagnosticsBuilder
+            DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
 
         Map<K, List<DependencyDiagnostic.VersionConflict.Entry<K>>> byDependency = new HashMap<>();
@@ -153,7 +153,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                 if (range == null) continue;
 
                 byDependency
-                        .computeIfAbsent(request.key(), k -> new ArrayList<>())
+                        .computeIfAbsent(request.key(), _ -> new ArrayList<>())
                         .add(new DependencyDiagnostic.VersionConflict.Entry<>(dependent.dependencyKey(), range));
             }
         }
@@ -177,10 +177,10 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
     /// Attempts the topological sort, converting a thrown [CircularDependencyException]
     /// into a [DependencyDiagnostic.Circular] instead of propagating it.
-    private <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> sortAndConvert(
+    private <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> sortAndConvert(
             Graph<K, Directed<K>> graph,
             Map<K, T> dependentMap,
-            DiagnosticsBuilder diagnosticsBuilder
+            DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
         try {
             TopologicalSortResult<K> sortedKeys = sorter.sort(graph);
@@ -204,11 +204,11 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     }
 
     @Override
-    public <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolve(
+    public <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolve(
             DependentContainer<K, T> dependentContainer
     ) {
 
-        DiagnosticsBuilder diagnosticsBuilder = ListDiagnostics.builder();
+        DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder = ListDiagnostics.builder();
 
         Map<K, T> dependentMap = buildMap(dependentContainer);
         Graph<K, Directed<K>> graph = buildGraph(dependentContainer, dependentMap, diagnosticsBuilder);
@@ -221,11 +221,11 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
     }
 
     @Override
-    public <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolveVersioned(
+    public <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveVersioned(
             DependentContainer<K, T> dependentContainer
     ) {
 
-        DiagnosticsBuilder diagnosticsBuilder = ListDiagnostics.builder();
+        DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder = ListDiagnostics.builder();
 
         detectVersionConflicts(dependentContainer, diagnosticsBuilder);
         if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {

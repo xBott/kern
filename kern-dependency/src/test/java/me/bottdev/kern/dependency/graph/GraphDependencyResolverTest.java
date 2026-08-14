@@ -220,10 +220,10 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        DiagnosticResult<ResolutionResult<String, Task>> result = resolver.resolve(container);
+        DiagnosticResult<ResolutionResult<String, Task>, DependencyDiagnostic> result = resolver.resolve(container);
         assertThat(result)
                 .isInstanceOf(DiagnosticResult.Failure.class);
-        DiagnosticResult.Failure<?> failure = (DiagnosticResult.Failure<?>) result;
+        DiagnosticResult.Failure<?, DependencyDiagnostic> failure = (DiagnosticResult.Failure<?, DependencyDiagnostic>) result;
         assertThat(failure.diagnostics())
                 .containsExactly(DependencyDiagnostic.missing("test", "build"));
     }
@@ -250,10 +250,10 @@ class GraphDependencyResolverTest {
                 )
                 .build();
 
-        DiagnosticResult<ResolutionResult<String, Task>> result = resolver.resolve(container);
+        DiagnosticResult<ResolutionResult<String, Task>, DependencyDiagnostic> result = resolver.resolve(container);
         assertThat(result)
                 .isInstanceOf(DiagnosticResult.Failure.class);
-        DiagnosticResult.Failure<?> failure = (DiagnosticResult.Failure<?>) result;
+        DiagnosticResult.Failure<?, DependencyDiagnostic> failure = (DiagnosticResult.Failure<?, DependencyDiagnostic>) result;
         assertThat(failure.diagnostics())
                 .containsExactly(DependencyDiagnostic.circular(new CyclePath<>("a", List.of("a", "b", "c"))));
 

@@ -11,8 +11,8 @@ public interface DependencyResolver {
 
      /// Resolves dependencies provided using [DependentContainer].
      ///
-     /// @param dependentContainer a container with [DependencyAware] objects
-     /// @return resolution result
-     <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolve(DependentContainer<K, T> dependentContainer);
+     /// @param dependentContainer a container with [DependencyAware] objects.
+     /// @return diagnostic result with wrapped around resolution result.
+     <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolve(DependentContainer<K, T> dependentContainer);
 
 }

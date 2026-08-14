@@ -1,5 +1,6 @@
 package me.bottdev.kern.dependency.versioned;
 
+import me.bottdev.kern.dependency.DependencyDiagnostic;
 import me.bottdev.kern.dependency.DependentContainer;
 import me.bottdev.kern.dependency.ResolutionResult;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
@@ -13,8 +14,8 @@ public interface VersionedDependencyResolver {
 
     /// Resolves versioned dependencies provided using [DependentContainer].
     ///
-    /// @param dependentContainer a container with [VersionedDependencyAware] objects
-    /// @return resolution result
-    <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>> resolveVersioned(DependentContainer<K, T> dependentContainer);
+    /// @param dependentContainer a container with [VersionedDependencyAware] objects.
+    /// @return diagnostic result wrapped around resolution result.
+    <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveVersioned(DependentContainer<K, T> dependentContainer);
 
 }
