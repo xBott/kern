@@ -4,21 +4,21 @@ import me.bottdev.kern.struct.paths.CyclePath;
 
 public class CircularDependencyException extends Exception {
 
-    private final CyclePath<?> cycleResult;
+    private final CyclePath<?> cyclePath;
 
-    public <T> CircularDependencyException(CyclePath<T> cycleResult, String message) {
+    public <T> CircularDependencyException(CyclePath<T> cyclePath, String message) {
         super(message);
-        this.cycleResult = cycleResult;
+        this.cyclePath = cyclePath;
     }
 
-    public <T> CircularDependencyException(CyclePath<T> cycleResult, String message, Throwable cause) {
+    public <T> CircularDependencyException(CyclePath<T> cyclePath, String message, Throwable cause) {
       super(message, cause);
-      this.cycleResult = cycleResult;
+      this.cyclePath = cyclePath;
     }
 
     @SuppressWarnings("unchecked")
-    public <T> CyclePath<T> getCycleResult() {
-        return (CyclePath<T>) cycleResult;
+    public <T> CyclePath<T> getCyclePath() {
+        return (CyclePath<T>) cyclePath;
     }
 
 }
