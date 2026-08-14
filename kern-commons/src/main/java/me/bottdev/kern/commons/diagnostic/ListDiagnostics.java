@@ -5,11 +5,11 @@ import lombok.NonNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ListDiagnostics implements Diagnostics {
+public class ListDiagnostics<D extends Diagnostic> implements Diagnostics<D> {
 
-    public static class Builder implements DiagnosticsBuilder {
+    public static class Builder<D extends Diagnostic> implements DiagnosticsBuilder<D> {
 
-        private final List<Diagnostic> buffer = new ArrayList<>();
+        private final List<D> buffer = new ArrayList<>();
 
         @Override
         public boolean isEmpty() {
@@ -22,25 +22,25 @@ public class ListDiagnostics implements Diagnostics {
         }
 
         @Override
-        public DiagnosticsBuilder append(Diagnostic diagnostic) {
+        public DiagnosticsBuilder<D> append(D diagnostic) {
             buffer.add(diagnostic);
             return this;
         }
 
         @Override
-        public Diagnostics build() {
-            return new ListDiagnostics(buffer);
+        public Diagnostics<D> build() {
+            return new ListDiagnostics<>(buffer);
         }
 
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <D extends Diagnostic> Builder<D> builder() {
+        return new Builder<>();
     }
 
-    private final List<Diagnostic> items;
+    private final List<D> items;
 
-    public ListDiagnostics(List<Diagnostic> items) {
+    public ListDiagnostics(List<D> items) {
         this.items = List.copyOf(items);
     }
 
@@ -65,23 +65,23 @@ public class ListDiagnostics implements Diagnostics {
     }
 
     @Override
-    public List<Diagnostic> ofType(DiagnosticType type) {
+    public List<D> ofType(DiagnosticType type) {
         return items.stream().filter(item -> item.type() == type).toList();
     }
 
     @Override
-    public List<Diagnostic> all() {
+    public List<D> all() {
         return List.copyOf(items);
     }
 
     @Override
-    public Map<DiagnosticType, List<Diagnostic>> grouped() {
+    public Map<DiagnosticType, List<D>> grouped() {
         return items.stream().collect(Collectors.groupingBy(Diagnostic::type));
     }
 
     @Override
     @NonNull
-    public Iterator<Diagnostic> iterator() {
+    public Iterator<D> iterator() {
         return items.iterator();
     }
 

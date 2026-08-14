@@ -1,5 +1,6 @@
 package me.bottdev.kern.commons.wrapper;
 
+import me.bottdev.kern.commons.diagnostic.Diagnostic;
 import me.bottdev.kern.commons.diagnostic.DiagnosticException;
 import me.bottdev.kern.commons.diagnostic.DiagnosticType;
 import me.bottdev.kern.commons.diagnostic.Diagnostics;
@@ -22,7 +23,8 @@ import java.util.function.Function;
 /// - [DiagnosticResult#failure(Diagnostics)] to return a wrapper with diagnostics, but with an absent value.
 ///
 /// @param <T> Wrapped object.
-public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
+/// @param <D> Type of diagnostic.
+public sealed interface DiagnosticResult<T, D extends Diagnostic> extends ObjectWrapper<T> permits
     DiagnosticResult.Success,
     DiagnosticResult.Failure
 {
@@ -33,53 +35,61 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
     boolean hasDiagnostics(DiagnosticType type);
 
     /// @return [Diagnostics] or null
-    Diagnostics unwrapDiagnostics();
+    Diagnostics<D> unwrapDiagnostics();
 
     /// Executes a provided function that takes [Diagnostics] as an argument if they are present.
-    void ifDiagnosticsPresent(Consumer<Diagnostics> consumer);
+    void ifDiagnosticsPresent(Consumer<Diagnostics<D>> consumer);
     /// Executes a provided function that takes [T] and [Diagnostics] as arguments if diagnostics are present.
-    void ifDiagnosticsPresent(BiConsumer<T, Diagnostics> consumer);
+    void ifDiagnosticsPresent(BiConsumer<T, Diagnostics<D>> consumer);
 
     /// Executes a provided function that takes [Diagnostics] as an argument if diagnostics of
     /// specified type are present.
-    void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics> consumer);
+    void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics<D>> consumer);
     /// Executes a provided function that takes [T] and [Diagnostics] as arguments if diagnostics of
     /// specified type are present.
-    void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics> consumer);
+    void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics<D>> consumer);
+
+    /// Folds the result into a single value by applying one of two functions depending on the state.
+    ///
+    /// @param presentFn  The function to apply if the result is present.
+    /// @param errFn The function to apply if result contains errors.
+    /// @param <U>   The return type.
+    /// @return The result of applying the respective function.
+    <U> U fold(Function<T, U> presentFn, Function<Diagnostics<D>, U> errFn);
 
     /// Unwraps the value or throws an exception if it is absent.
     /// @throws DiagnosticException if wrapped value is absent.
     /// @return [T] if value is present.
     default T unwrapOrThrow() throws DiagnosticException {
-        if (this instanceof Success<T> success) return success.unwrap();
-        Failure<T> failure = (Failure<T>) this;
+        if (this instanceof Success<T, D> success) return success.unwrap();
+        Failure<T, D> failure = (Failure<T, D>) this;
         throw new DiagnosticException(failure.diagnostics());
     }
 
     /// @return [Success] diagnostic result wrapper with provided value and no diagnostics.
-    static <T> DiagnosticResult<T> success(@NonNull T value) {
+    static <T, D extends Diagnostic> DiagnosticResult<T, D> success(@NonNull T value) {
         return new Success<>(value, null);
     }
 
     /// @throws IllegalArgumentException if diagnostics contain any errors.
     /// @return [Success] diagnostic result wrapper with provided value and diagnostics.
-    static <T> DiagnosticResult<T> success(@NonNull T value, Diagnostics diagnostics) {
+    static <T, D extends Diagnostic> DiagnosticResult<T, D> success(@NonNull T value, Diagnostics<D> diagnostics) {
         if (diagnostics.has(DiagnosticType.ERROR))
             throw new IllegalArgumentException("Diagnostics cannot contain errors in success diagnostic result.");
         return new Success<>(value, diagnostics);
     }
 
     /// @return [Failure] diagnostic result wrapper with provided diagnostics.
-    static <T> DiagnosticResult<T> failure(Diagnostics diagnostics) {
+    static <T, D extends Diagnostic> DiagnosticResult<T, D> failure(Diagnostics<D> diagnostics) {
         return new Failure<>(diagnostics);
     }
 
     /// Success implementation of [DiagnosticResult].
     /// Diagnostics do not contain any errors.
-    record Success<T>(
+    record Success<T, D extends Diagnostic>(
             @NonNull T value,
-            Diagnostics diagnostics
-    ) implements DiagnosticResult<T> {
+            Diagnostics<D> diagnostics
+    ) implements DiagnosticResult<T, D> {
 
         @Override
         public boolean hasDiagnostics() {
@@ -107,12 +117,12 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
         }
 
         @Override
-        public Diagnostics unwrapDiagnostics() {
+        public Diagnostics<D> unwrapDiagnostics() {
             return diagnostics;
         }
 
         @Override
-        public <U> DiagnosticResult<U> map(Function<T, U> mapper) {
+        public <U> DiagnosticResult<U, D> map(Function<T, U> mapper) {
             return new Success<>(mapper.apply(value), diagnostics);
         }
 
@@ -132,23 +142,28 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
         }
 
         @Override
-        public void ifDiagnosticsPresent(Consumer<Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(Consumer<Diagnostics<D>> consumer) {
             if (hasDiagnostics()) consumer.accept(diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(BiConsumer<T, Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(BiConsumer<T, Diagnostics<D>> consumer) {
             if (hasDiagnostics()) consumer.accept(value, diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics<D>> consumer) {
             if (hasDiagnostics(type)) consumer.accept(diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics<D>> consumer) {
             if (hasDiagnostics(type)) consumer.accept(value, diagnostics);
+        }
+
+        @Override
+        public <U> U fold(Function<T, U> presentFn, Function<Diagnostics<D>, U> errFn) {
+            return presentFn.apply(value);
         }
 
     }
@@ -156,9 +171,9 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
     /// Failure implementation of [DiagnosticResult].
     /// Does not contain a value.
     /// May contain [Diagnostics], but not necessary.
-    record Failure<T>(
-            Diagnostics diagnostics
-    ) implements DiagnosticResult<T> {
+    record Failure<T, D extends Diagnostic>(
+            Diagnostics<D> diagnostics
+    ) implements DiagnosticResult<T, D> {
 
         @Override
         public boolean hasDiagnostics() {
@@ -171,7 +186,7 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
         }
 
         @Override
-        public Diagnostics unwrapDiagnostics() {
+        public Diagnostics<D> unwrapDiagnostics() {
             return diagnostics;
         }
 
@@ -192,8 +207,8 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
 
         @SuppressWarnings("unchecked")
         @Override
-        public <U> DiagnosticResult<U> map(Function<T, U> mapper) {
-            return (DiagnosticResult<U>) this;
+        public <U> DiagnosticResult<U, D> map(Function<T, U> mapper) {
+            return (DiagnosticResult<U, D>) this;
         }
 
         @SuppressWarnings("unchecked")
@@ -213,25 +228,29 @@ public sealed interface DiagnosticResult<T> extends ObjectWrapper<T> permits
         }
 
         @Override
-        public void ifDiagnosticsPresent(Consumer<Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(Consumer<Diagnostics<D>> consumer) {
             if (hasDiagnostics()) consumer.accept(diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(BiConsumer<T, Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(BiConsumer<T, Diagnostics<D>> consumer) {
 
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics<D>> consumer) {
             if (hasDiagnostics(type)) consumer.accept(diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics<D>> consumer) {
 
         }
 
+        @Override
+        public <U> U fold(Function<T, U> presentFn, Function<Diagnostics<D>, U> errFn) {
+            return errFn.apply(diagnostics);
+        }
     }
 
 

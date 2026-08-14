@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /// Interface of a set of diagnostics.
-public interface Diagnostics extends Iterable<Diagnostic> {
+public interface Diagnostics<D extends Diagnostic> extends Iterable<D> {
 
     /// @return Amount of diagnostics.
     int size();
@@ -26,13 +26,13 @@ public interface Diagnostics extends Iterable<Diagnostic> {
     }
 
     /// @return A list of all diagnostics.
-    List<Diagnostic> all();
+    List<D> all();
 
     /// @return A list of diagnostics with a specified type.
-    List<Diagnostic> ofType(DiagnosticType type);
+    List<D> ofType(DiagnosticType type);
 
     /// @return A snapshot of diagnostics grouped by theirs type.
-    Map<DiagnosticType, List<Diagnostic>> grouped();
+    Map<DiagnosticType, List<D>> grouped();
 
     /// @throws DiagnosticException if there are any errors present.
     default void throwIfHasErrors() throws DiagnosticException {

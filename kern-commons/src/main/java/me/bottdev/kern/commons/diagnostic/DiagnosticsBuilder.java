@@ -1,7 +1,7 @@
 package me.bottdev.kern.commons.diagnostic;
 
 /// Interface that allows to create diagnostics in a convenient, human-readable way.
-public interface DiagnosticsBuilder {
+public interface DiagnosticsBuilder<D extends Diagnostic> {
 
     /// @return Indicates whether the builder is empty.
     boolean isEmpty();
@@ -10,10 +10,10 @@ public interface DiagnosticsBuilder {
     boolean has(DiagnosticType type);
 
     /// Adds a new diagnostics.
-    DiagnosticsBuilder append(Diagnostic diagnostic);
+    DiagnosticsBuilder<D> append(D diagnostic);
 
     /// Builds the diagnostics and returns a read-only record.
-    Diagnostics build();
+    Diagnostics<D> build();
 
 
 }
