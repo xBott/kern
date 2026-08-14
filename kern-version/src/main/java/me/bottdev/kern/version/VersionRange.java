@@ -20,7 +20,7 @@ public record VersionRange(List<List<VersionComparator>> comparatorSets) {
 
     public static VersionRange intersectAll(@NonNull List<VersionRange> ranges) {
         VersionRange intersection = ranges.getFirst();
-        for (int i = 1; i < ranges.size(); i++) {
+        for (int i = 1; i < ranges.size() && !intersection.isEmpty(); i++) {
             intersection = intersection.intersect(ranges.get(i));
         }
         return intersection;
