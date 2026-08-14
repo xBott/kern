@@ -3,71 +3,26 @@ package me.bottdev.kern.dependency.graph;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.containers.SimpleDependentContainer;
-import me.bottdev.kern.struct.algorithms.cycle.CycleDetector;
 import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
 import me.bottdev.kern.struct.algorithms.sort.KahnSorter;
-import me.bottdev.kern.struct.algorithms.sort.TopologicalSorter;
 import me.bottdev.kern.struct.paths.CyclePath;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import static me.bottdev.kern.dependency.Task.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GraphDependencyResolverTest {
 
-    record Task(String id, List<SimpleDependencyRequest<String>> dependencies) implements DependencyAware<String> {
-
-        static class Builder {
-
-            private final String id;
-            private final List<SimpleDependencyRequest<String>> dependencies = new ArrayList<>();
-
-            public Builder(String id) {
-                this.id = id;
-            }
-
-            public Builder dependsOn(String taskId, DependencyLink link, DependOrder order) {
-                dependencies.add(new SimpleDependencyRequest<>(taskId, link, order));
-                return this;
-            }
-
-            public Task build() {
-                return new Task(id, dependencies);
-            }
-
-        }
-
-        @Override
-        public String dependencyKey() {
-            return id;
-        }
-
-        @Override
-        public List<DependencyRequest<String>> getDependencies() {
-            return Collections.unmodifiableList(dependencies);
-        }
-
-    }
-
-    static CycleDetector cycleDetector;
-    static TopologicalSorter sorter;
     static DependencyResolver resolver;
 
     @BeforeAll
     static void setAll() {
-        cycleDetector = new SimpleCycleDetector();
-        sorter = new KahnSorter(cycleDetector);
-        resolver = new GraphDependencyResolver(sorter);
-    }
-
-    Task.Builder task(String id) {
-        return new Task.Builder(id);
+        resolver = new GraphDependencyResolver(new KahnSorter(new SimpleCycleDetector()));
     }
 
     @Test
