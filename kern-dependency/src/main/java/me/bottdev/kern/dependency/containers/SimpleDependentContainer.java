@@ -20,7 +20,7 @@ public record SimpleDependentContainer<K, T extends DependencyAware<K>>(
             return this;
         }
 
-        public Builder<K, T> add(List<T> dependents) {
+        public Builder<K, T> add(Collection<T> dependents) {
             dependents.forEach(this::add);
             return this;
         }
