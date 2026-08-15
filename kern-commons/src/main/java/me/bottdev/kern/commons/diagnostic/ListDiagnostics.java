@@ -5,7 +5,9 @@ import lombok.NonNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ListDiagnostics<D extends Diagnostic> implements Diagnostics<D> {
+public record ListDiagnostics<D extends Diagnostic>(
+        List<D> items
+) implements Diagnostics<D> {
 
     public static class Builder<D extends Diagnostic> implements DiagnosticsBuilder<D> {
 
@@ -42,7 +44,6 @@ public class ListDiagnostics<D extends Diagnostic> implements Diagnostics<D> {
         return new ListDiagnostics<>(List.of());
     }
 
-    private final List<D> items;
 
     public ListDiagnostics(List<D> items) {
         this.items = List.copyOf(items);
@@ -90,10 +91,12 @@ public class ListDiagnostics<D extends Diagnostic> implements Diagnostics<D> {
     }
 
     @Override
+    @NonNull
     public String toString() {
         StringBuilder sb = new StringBuilder("Diagnostics[\n");
         items.forEach(item -> sb.append(item.message()).append("\n"));
         sb.append("]");
         return sb.toString();
     }
+
 }
