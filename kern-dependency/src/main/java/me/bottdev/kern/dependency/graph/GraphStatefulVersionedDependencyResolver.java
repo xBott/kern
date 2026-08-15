@@ -96,18 +96,18 @@ public class GraphStatefulVersionedDependencyResolver<K, T extends VersionedDepe
                 T dependency = dependentContainer.get(dependencyKey);
                 DependencyLink link = request.link();
 
-                if (dependency == null && link == DependencyLink.REQUIRED) {
+                if (dependency == null) {
                     dependency = state.get(dependencyKey);
                     if (dependency == null) {
-                        diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                        if (link == DependencyLink.REQUIRED) {
+                            diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                        }
                         continue;
                     }
                 }
 
-                if (dependency != null) {
-                    boolean versionOk = validateVersion(dependentKey, dependencyKey, dependency, request, diagnosticsBuilder);
-                    if (!versionOk) continue;
-                }
+                boolean versionOk = validateVersion(dependentKey, dependencyKey, dependency, request, diagnosticsBuilder);
+                if (!versionOk) continue;
 
                 Directed<K> edge = switch (request.order()) {
                     case BEFORE -> EndpointPairs.directed(dependentKey, dependencyKey);

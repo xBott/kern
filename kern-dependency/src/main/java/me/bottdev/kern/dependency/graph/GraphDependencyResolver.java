@@ -52,10 +52,13 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                 T dependency = dependentContainer.get(dependencyKey);
                 DependencyLink link = request.link();
 
-                if (dependency == null && link == DependencyLink.REQUIRED) {
-                    diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                if (dependency == null) {
+                    if (link == DependencyLink.REQUIRED) {
+                        diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                    }
                     continue;
                 }
+
 
                 Directed<K> edge = switch (request.order()) {
                     case BEFORE -> EndpointPairs.directed(dependentKey, dependencyKey);
@@ -92,8 +95,9 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                 T dependency = dependentContainer.get(dependencyKey);
 
                 if (dependency == null) {
-                    if (link == DependencyLink.OPTIONAL) continue;
-                    diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                    if (link == DependencyLink.REQUIRED) {
+                        diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                    }
                     continue;
                 }
 
@@ -107,6 +111,8 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                     ));
                     continue;
                 }
+
+
 
                 Directed<K> edge = switch (request.order()) {
                     case BEFORE -> EndpointPairs.directed(dependentKey, dependencyKey);

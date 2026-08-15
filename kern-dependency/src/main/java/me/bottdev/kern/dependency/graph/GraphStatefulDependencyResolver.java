@@ -61,10 +61,12 @@ public class GraphStatefulDependencyResolver<K, T extends DependencyAware<K>> im
                 T dependency = dependentContainer.get(dependencyKey);
                 DependencyLink link = request.link();
 
-                if (dependency == null && link == DependencyLink.REQUIRED) {
+                if (dependency == null) {
                     dependency = state.get(dependencyKey);
                     if (dependency == null) {
-                        diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                        if (link == DependencyLink.REQUIRED) {
+                            diagnosticsBuilder.append(DependencyDiagnostic.missing(dependentKey, dependencyKey));
+                        }
                         continue;
                     }
                 }
