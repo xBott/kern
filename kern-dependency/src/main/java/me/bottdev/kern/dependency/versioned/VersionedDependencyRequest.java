@@ -1,5 +1,6 @@
 package me.bottdev.kern.dependency.versioned;
 
+import lombok.NonNull;
 import me.bottdev.kern.dependency.DependOrder;
 import me.bottdev.kern.dependency.DependencyLink;
 import me.bottdev.kern.dependency.DependencyRequest;
@@ -14,8 +15,8 @@ import me.bottdev.kern.version.VersionRange;
 ///
 /// @param <K> type of the key that identifies the dependency object in the graph
 public record VersionedDependencyRequest<K>(
-        K key,
-        DependencyLink link,
-        DependOrder order,
-        VersionRange versionRange
+        @NonNull K key,
+        @NonNull DependencyLink link,
+        @NonNull DependOrder order,
+        @NonNull VersionRange versionRange
 ) implements DependencyRequest<K> {}

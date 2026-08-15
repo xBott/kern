@@ -1,5 +1,7 @@
 package me.bottdev.kern.dependency;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +33,12 @@ public record Task(String id, List<DependencyRequest<String>> dependencies) impl
     }
 
     @Override
-    public String dependencyKey() {
+    public @NonNull String dependencyKey() {
         return id;
     }
 
     @Override
-    public List<DependencyRequest<String>> getDependencies() {
+    public @NonNull List<DependencyRequest<String>> getDependencies() {
         return Collections.unmodifiableList(dependencies);
     }
 

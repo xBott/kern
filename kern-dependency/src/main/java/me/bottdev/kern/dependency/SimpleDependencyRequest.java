@@ -1,5 +1,7 @@
 package me.bottdev.kern.dependency;
 
+import lombok.NonNull;
+
 /// Simple implementation of [DependencyRequest]
 ///
 /// @param key key that identifies the dependency object
@@ -8,7 +10,7 @@ package me.bottdev.kern.dependency;
 ///
 /// @param <K> type of the key that identifies the dependency object in the graph
 public record SimpleDependencyRequest<K>(
-        K key,
-        DependencyLink link,
-        DependOrder order
+        @NonNull K key,
+        @NonNull DependencyLink link,
+        @NonNull DependOrder order
 ) implements DependencyRequest<K> {}

@@ -34,7 +34,7 @@ public class GraphStatefulVersionedDependencyResolver<K, T extends VersionedDepe
     }
 
     @Override
-    public DependencyResolverState<K, T> state() {
+    public @NonNull DependencyResolverState<K, T> state() {
         return state;
     }
 
@@ -134,7 +134,7 @@ public class GraphStatefulVersionedDependencyResolver<K, T extends VersionedDepe
 
     @Override
     public synchronized DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveAndRemember(
-            DependentContainer<K, T> dependentContainer
+            @NonNull DependentContainer<K, T> dependentContainer
     ) {
 
         if (dependentContainer.isEmpty()) return DiagnosticResult.success(ResolutionResult.empty());

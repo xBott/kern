@@ -10,7 +10,7 @@ public interface DependentContainer<K, T extends DependencyAware<K>> {
 
     boolean isEmpty();
 
-    /// @return a list of [K] keys.
+    /// @return a set of [K] keys.
     Set<K> keys();
 
     /// @return a list of [DependencyAware] objects.

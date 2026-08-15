@@ -4,6 +4,7 @@ import me.bottdev.kern.dependency.versioned.VersionedDependencyAware;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyRequest;
 import me.bottdev.kern.version.SemVersion;
 import me.bottdev.kern.version.VersionRange;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,12 +43,12 @@ public record Module(
     }
 
     @Override
-    public String dependencyKey() {
+    public @NonNull String dependencyKey() {
         return id;
     }
 
     @Override
-    public List<VersionedDependencyRequest<String>> getVersionedDependencies() {
+    public @NonNull List<VersionedDependencyRequest<String>> getVersionedDependencies() {
         return Collections.unmodifiableList(dependencies);
     }
 

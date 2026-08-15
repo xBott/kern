@@ -1,5 +1,6 @@
 package me.bottdev.kern.dependency;
 
+import lombok.NonNull;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 
 /// Interface that defines an object that performs dependency resolution and
@@ -13,12 +14,12 @@ import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 public interface StatefulDependencyResolver<K, T extends DependencyAware<K>> {
 
     /// @return State of dependency resolver.
-    DependencyResolverState<K, T> state();
+    @NonNull DependencyResolverState<K, T> state();
 
     /// Resolves provided dependents considering the context of the resolver.
     /// @return diagnostic result with resolution result of only provided objects.
     DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveAndRemember(
-            DependentContainer<K, T> dependentContainer
+            @NonNull DependentContainer<K, T> dependentContainer
     );
 
 }

@@ -1,17 +1,19 @@
 package me.bottdev.kern.dependency;
 
+import org.jspecify.annotations.NonNull;
+
 /// Interface used to define a dependency of [DependencyAware] class.
 /// @param <K>  type of the key that identifies the dependency object in the graph
 public interface DependencyRequest<K> {
 
     /// returns key that identifies the dependency object
-    K key();
+    @NonNull K key();
 
     /// indicates how strongly the dependencies are linked to one another
-    DependencyLink link();
+    @NonNull DependencyLink link();
 
     /// return position of object regarding the dependency
-    DependOrder order();
+    @NonNull DependOrder order();
 
 
 }

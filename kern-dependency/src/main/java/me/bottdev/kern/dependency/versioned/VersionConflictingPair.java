@@ -1,6 +1,8 @@
 package me.bottdev.kern.dependency.versioned;
 
+import lombok.NonNull;
+
 public record VersionConflictingPair<K>(
-        VersionConflictEntry<K> first,
-        VersionConflictEntry<K> second
+        @NonNull VersionConflictEntry<K> first,
+        @NonNull VersionConflictEntry<K> second
 ) {}

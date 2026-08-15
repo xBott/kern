@@ -27,7 +27,7 @@ public class GraphStatefulDependencyResolver<K, T extends DependencyAware<K>> im
     }
 
     @Override
-    public DependencyResolverState<K, T> state() {
+    public @NonNull DependencyResolverState<K, T> state() {
         return state;
     }
 
@@ -96,7 +96,7 @@ public class GraphStatefulDependencyResolver<K, T extends DependencyAware<K>> im
 
     @Override
     public synchronized DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveAndRemember(
-            DependentContainer<K, T> dependentContainer
+            @NonNull DependentContainer<K, T> dependentContainer
     ) {
 
         if (dependentContainer.isEmpty()) return DiagnosticResult.success(ResolutionResult.empty());

@@ -1,5 +1,6 @@
 package me.bottdev.kern.dependency.versioned;
 
+import lombok.NonNull;
 import me.bottdev.kern.commons.diagnostic.DiagnosticsBuilder;
 import me.bottdev.kern.dependency.DependencyDiagnostic;
 import me.bottdev.kern.version.VersionRange;
@@ -17,8 +18,8 @@ public class VersionConflictDetector {
     /// per-candidate version validation — this method intentionally does not look at
     /// resolver state, since it runs before any candidate is resolved.
     public static <K, T extends VersionedDependencyAware<K>> void detect(
-            Collection<T> dependents,
-            DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
+            @NonNull Collection<T> dependents,
+            @NonNull DiagnosticsBuilder<DependencyDiagnostic> diagnosticsBuilder
     ) {
 
         Map<K, List<VersionConflictEntry<K>>> byDependency = new HashMap<>();

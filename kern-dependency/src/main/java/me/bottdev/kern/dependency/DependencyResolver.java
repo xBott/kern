@@ -1,6 +1,7 @@
 package me.bottdev.kern.dependency;
 
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
+import org.jspecify.annotations.NonNull;
 
 /// Interface that defines a strategy of dependency resolution.
 /// Should be used as a singleton.
@@ -13,6 +14,8 @@ public interface DependencyResolver {
      ///
      /// @param dependentContainer a container with [DependencyAware] objects.
      /// @return diagnostic result with wrapped around resolution result.
-     <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolve(DependentContainer<K, T> dependentContainer);
+     <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolve(
+             @NonNull DependentContainer<K, T> dependentContainer
+     );
 
 }

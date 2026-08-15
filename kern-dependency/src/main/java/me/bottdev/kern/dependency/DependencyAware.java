@@ -1,5 +1,7 @@
 package me.bottdev.kern.dependency;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.List;
 
 /// Marker interface for objects that participate in dependency resolution.
@@ -12,9 +14,9 @@ import java.util.List;
 public interface DependencyAware<K> {
 
     /// Returns the unique key that identifies this object in the dependency graph.
-    K dependencyKey();
+    @NonNull K dependencyKey();
 
     /// Returns the keys of objects this object directly depends on.
-    List<DependencyRequest<K>> getDependencies();
+    @NonNull List<DependencyRequest<K>> getDependencies();
 
 }

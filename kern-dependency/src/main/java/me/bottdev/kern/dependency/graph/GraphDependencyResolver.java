@@ -102,7 +102,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
                 }
 
                 VersionRange versionRange = request.versionRange();
-                if (versionRange != null && !versionRange.satisfies(dependency.version())) {
+                if (!versionRange.satisfies(dependency.version())) {
                     diagnosticsBuilder.append(DependencyDiagnostic.versionMismatch(
                             dependentKey,
                             dependencyKey,
@@ -158,7 +158,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
     @Override
     public <K, T extends DependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolve(
-            DependentContainer<K, T> dependentContainer
+            @NonNull DependentContainer<K, T> dependentContainer
     ) {
 
         if (dependentContainer.isEmpty()) return DiagnosticResult.success(ResolutionResult.empty());
@@ -176,7 +176,7 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
     @Override
     public <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveVersioned(
-            DependentContainer<K, T> dependentContainer
+            @NonNull DependentContainer<K, T> dependentContainer
     ) {
 
         if (dependentContainer.isEmpty()) return DiagnosticResult.success(ResolutionResult.empty());

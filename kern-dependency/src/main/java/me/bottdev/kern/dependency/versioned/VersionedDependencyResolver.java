@@ -1,5 +1,6 @@
 package me.bottdev.kern.dependency.versioned;
 
+import lombok.NonNull;
 import me.bottdev.kern.dependency.DependencyDiagnostic;
 import me.bottdev.kern.dependency.DependentContainer;
 import me.bottdev.kern.dependency.ResolutionResult;
@@ -16,6 +17,8 @@ public interface VersionedDependencyResolver {
     ///
     /// @param dependentContainer a container with [VersionedDependencyAware] objects.
     /// @return diagnostic result wrapped around resolution result.
-    <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveVersioned(DependentContainer<K, T> dependentContainer);
+    <K, T extends VersionedDependencyAware<K>> DiagnosticResult<ResolutionResult<K, T>, DependencyDiagnostic> resolveVersioned(
+            @NonNull DependentContainer<K, T> dependentContainer
+    );
 
 }

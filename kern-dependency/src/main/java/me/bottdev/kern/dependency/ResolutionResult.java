@@ -13,8 +13,8 @@ import java.util.List;
 ///
 /// @param <T> type of the resolved objects
 public record ResolutionResult<K, T extends DependencyAware<K>>(
-        List<T> ordered,
-        List<List<T>> layers
+       @NonNull List<T> ordered,
+       @NonNull List<List<T>> layers
 ) {
 
     public static <K, T extends DependencyAware<K>> ResolutionResult<K, T> empty() {
