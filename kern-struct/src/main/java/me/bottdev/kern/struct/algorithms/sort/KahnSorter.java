@@ -30,9 +30,9 @@ public class KahnSorter implements TopologicalSorter {
 
         graph.nodes().forEach(node -> {
 
-            int inDegree = graph.inDegree(node);
-            remainingDependencies.put(node, inDegree);
-            if (inDegree == 0) {
+            int outDegree = graph.outDegree(node);
+            remainingDependencies.put(node, outDegree);
+            if (outDegree == 0) {
                 ready.add(node);
             }
             dependents.putIfAbsent(node, new LinkedHashSet<>());
@@ -56,9 +56,9 @@ public class KahnSorter implements TopologicalSorter {
             processed += layer.size();
 
             for (N node : layer) {
-                for (N successor : graph.successors(node)) {
-                    int newInDegree = remainingDependencies.merge(successor, -1, Integer::sum);
-                    if  (newInDegree == 0) {
+                for (N successor : graph.predecessors(node)) {
+                    int newOutDegree = remainingDependencies.merge(successor, -1, Integer::sum);
+                    if  (newOutDegree == 0) {
                         ready.add(successor);
                     }
                 }

@@ -360,7 +360,7 @@ class GraphStatefulVersionedDependencyResolverTest {
 
         assertTrue(result2.hasDiagnostics(DiagnosticType.ERROR));
         assertThat(result2.unwrapDiagnostics())
-                .contains(DependencyDiagnostic.circular(new CyclePath<>("6", List.of("1", "3", "4", "6", "5"))));
+                .contains(DependencyDiagnostic.circular(new CyclePath<>(List.of("5", "6", "5"))));
 
     }
 

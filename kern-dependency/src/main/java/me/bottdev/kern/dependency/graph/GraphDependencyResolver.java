@@ -61,8 +61,8 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
 
                 Directed<K> edge = switch (request.order()) {
-                    case BEFORE -> EndpointPairs.directed(dependentKey, dependencyKey);
-                    case AFTER -> EndpointPairs.directed(dependencyKey, dependentKey);
+                    case AFTER -> EndpointPairs.directed(dependentKey, dependencyKey);
+                    case BEFORE -> EndpointPairs.directed(dependencyKey, dependentKey);
                 };
 
                 builder.addEdge(edge);
@@ -115,8 +115,8 @@ public class GraphDependencyResolver implements DependencyResolver, VersionedDep
 
 
                 Directed<K> edge = switch (request.order()) {
-                    case BEFORE -> EndpointPairs.directed(dependentKey, dependencyKey);
-                    case AFTER -> EndpointPairs.directed(dependencyKey, dependentKey);
+                    case AFTER -> EndpointPairs.directed(dependentKey, dependencyKey);
+                    case BEFORE -> EndpointPairs.directed(dependencyKey, dependentKey);
                 };
 
                 builder.addEdge(edge);

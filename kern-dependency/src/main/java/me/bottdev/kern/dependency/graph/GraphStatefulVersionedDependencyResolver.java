@@ -110,8 +110,8 @@ public class GraphStatefulVersionedDependencyResolver<K, T extends VersionedDepe
                 if (!versionOk) continue;
 
                 Directed<K> edge = switch (request.order()) {
-                    case BEFORE -> EndpointPairs.directed(dependentKey, dependencyKey);
-                    case AFTER -> EndpointPairs.directed(dependencyKey, dependentKey);
+                    case AFTER -> EndpointPairs.directed(dependentKey, dependencyKey);
+                    case BEFORE -> EndpointPairs.directed(dependencyKey, dependentKey);
                 };
 
                 state.graph().addEdge(edge);

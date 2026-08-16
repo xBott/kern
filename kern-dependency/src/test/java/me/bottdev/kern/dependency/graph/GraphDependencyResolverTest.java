@@ -210,7 +210,7 @@ class GraphDependencyResolverTest {
                 .isInstanceOf(DiagnosticResult.Failure.class);
         DiagnosticResult.Failure<?, DependencyDiagnostic> failure = (DiagnosticResult.Failure<?, DependencyDiagnostic>) result;
         assertThat(failure.diagnostics())
-                .containsExactly(DependencyDiagnostic.circular(new CyclePath<>("a", List.of("a", "b", "c"))));
+                .containsExactly(DependencyDiagnostic.circular(new CyclePath<>(List.of("a", "c", "b", "a"))));
 
     }
 
