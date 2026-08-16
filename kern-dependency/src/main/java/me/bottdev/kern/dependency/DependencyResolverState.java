@@ -22,6 +22,9 @@ public interface DependencyResolverState<K, T extends DependencyAware<K>> {
     /// @return A set of keys that depend on a specified dependency.
     Set<K> dependentsOf(K key);
 
+    /// @return A set of dependency keys of a specified dependent.
+    Set<K> dependenciesOf(K key);
+
     /// Saves a dependent to the state.
     void commit(T dependent);
 

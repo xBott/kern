@@ -35,6 +35,11 @@ public class GraphDependencyResolverState<K, T extends DependencyAware<K>> imple
     }
 
     @Override
+    public Set<K> dependenciesOf(K key) {
+        return graph.successors(key);
+    }
+
+    @Override
     public void commit(T dependent) {
         K key = dependent.dependencyKey();
         if (committed.containsKey(key)) return;
@@ -62,4 +67,8 @@ public class GraphDependencyResolverState<K, T extends DependencyAware<K>> imple
         return graph;
     }
 
+    @Override
+    public String toString() {
+        return "GraphDependencyResolverState[commited=" + committed.keySet() + ", graph=" + graph + "]";
+    }
 }
