@@ -1,23 +1,38 @@
 package me.bottdev.kern.struct.algorithms.cycle;
 
-import me.bottdev.kern.struct.paths.CyclePath;
-import me.bottdev.kern.struct.algorithms.traverse.TraversalIterator;
-import me.bottdev.kern.struct.algorithms.traverse.Traversals;
-import me.bottdev.kern.struct.algorithms.traverse.TraversalStep;
+import me.bottdev.kern.struct.algorithms.traverse.*;
 import me.bottdev.kern.struct.graph.EndpointPair;
 import me.bottdev.kern.struct.graph.Graph;
+import me.bottdev.kern.struct.paths.CyclePath;
 
 import java.util.*;
 
 public class SimpleCycleDetector implements CycleDetector {
 
     @Override
-    public <N, E extends EndpointPair<N>> Optional<CyclePath<N>> detect(Graph<N, E> graph) {
+    public <N, E extends EndpointPair<N>> Optional<CyclePath<N>> detect(
+            Graph<N, E> graph
+    ) {
+        Set<N> visited = new HashSet<>();
+        Set<N> visiting = new HashSet<>();
+        List<N> path = new ArrayList<>();
 
         for (N node : graph.nodes()) {
-            Optional<CyclePath<N>> cyclePath = dfs(graph, node);
-            if (cyclePath.isPresent()) {
-                return cyclePath;
+
+            if (visited.contains(node)) {
+                continue;
+            }
+
+            Optional<CyclePath<N>> cycle = dfs(
+                    graph,
+                    node,
+                    visited,
+                    visiting,
+                    path
+            );
+
+            if (cycle.isPresent()) {
+                return cycle;
             }
         }
 
@@ -26,32 +41,54 @@ public class SimpleCycleDetector implements CycleDetector {
 
     private <N, E extends EndpointPair<N>> Optional<CyclePath<N>> dfs(
             Graph<N, E> graph,
-            N start
+            N current,
+            Set<N> visited,
+            Set<N> visiting,
+            List<N> path
     ) {
 
-        List<N> visited = new ArrayList<>();
-        TraversalIterator<N, ?> iterator = Traversals.dfsPreOrder()
-                .on(graph)
-                .from(start)
-                .allowDuplicates(true)
-                .iterator();
+        if (visiting.contains(current)) {
 
-        while (iterator.hasNext()) {
+            int cycleStart = path.indexOf(current);
 
-            TraversalStep<N, ?> step = iterator.next();
-            N node = step.node();
+            List<N> cycle = new ArrayList<>(
+                    path.subList(cycleStart, path.size())
+            );
 
-            if (visited.contains(node)) {
-                CyclePath<N> cyclePath = new CyclePath<>(node, visited);
-                return Optional.of(cyclePath);
-            }
+            cycle.add(current);
 
-            visited.add(node);
-
+            return Optional.of(
+                    new CyclePath<>(cycle)
+            );
         }
+
+        if (visited.contains(current)) {
+            return Optional.empty();
+        }
+
+        visiting.add(current);
+        path.add(current);
+
+        for (N successor : graph.successors(current)) {
+
+            Optional<CyclePath<N>> result = dfs(
+                    graph,
+                    successor,
+                    visited,
+                    visiting,
+                    path
+            );
+
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+
+        path.removeLast();
+        visiting.remove(current);
+        visited.add(current);
 
         return Optional.empty();
     }
-
 
 }
