@@ -3,9 +3,11 @@ package me.bottdev.kern.commons.download;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.function.Supplier;
+
 public record DownloadChecksum(
     @NonNull Algorithm algorithm,
-    @NonNull String expected
+    @NonNull Supplier<String> expectedSupplier
 ) {
 
     @RequiredArgsConstructor

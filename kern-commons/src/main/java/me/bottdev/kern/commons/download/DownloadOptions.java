@@ -32,7 +32,7 @@ public record DownloadOptions(
                 @NonNull DownloadChecksum.Algorithm algorithm,
                 @NonNull String expected
         ) {
-            this.checksum = new DownloadChecksum(algorithm, expected);
+            this.checksum = new DownloadChecksum(algorithm, () -> expected);
             return this;
         }
 

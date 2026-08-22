@@ -163,7 +163,7 @@ public class ParallelDownloadManager implements DownloadManager {
         }
 
         String actualHash = digest != null ? HexFormat.of().formatHex(digest.digest()) : null;
-        String expectedHash = options.checksum() != null ? options.checksum().expected() : null;
+        String expectedHash = options.checksum() != null ? options.checksum().expectedSupplier().get() : null;
 
         if (actualHash != null && expectedHash != null && !expectedHash.equalsIgnoreCase(actualHash)) {
             Files.deleteIfExists(tempFile);

@@ -61,7 +61,7 @@ final class DownloadTaskImpl implements DownloadTask {
 
     @Override
     public float speed() {
-        return 0;
+        return currentSpeed;
     }
 
     @Override
@@ -118,7 +118,14 @@ final class DownloadTaskImpl implements DownloadTask {
         if (!state.compareAndSet(DownloadState.DOWNLOADING, DownloadState.COMPLETED)) return;
         completedAt = System.nanoTime();
         if (total >= 0) downloaded = total;
-        currentSpeed = 0;
+
+        if (currentSpeed == 0f && downloaded > 0) {
+            double totalSeconds = (completedAt - startedAt) / 1_000_000_000.0;
+            if (totalSeconds > 0) {
+                currentSpeed = (float) (downloaded / totalSeconds);
+            }
+        }
+
         listener.onCompleted(key, result);
         completion.complete(result);
     }
