@@ -2,6 +2,7 @@ package me.bottdev.kern.commons.download;
 
 import me.bottdev.kern.commons.download.exceptions.DownloadCancelledException;
 import me.bottdev.kern.commons.download.exceptions.DownloadChecksumException;
+import me.bottdev.kern.commons.download.exceptions.DownloadNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,7 +111,8 @@ public class ParallelDownloadManager implements DownloadManager {
     private void execute(DownloadTaskImpl task, DownloadOptions options) throws
             IOException,
             InterruptedException,
-            DownloadChecksumException
+            DownloadChecksumException,
+            DownloadNotFoundException
     {
 
         DownloadKey key = task.key();
@@ -125,6 +127,10 @@ public class ParallelDownloadManager implements DownloadManager {
 
         HttpRequest request = HttpRequest.newBuilder(key.uri()).GET().build();
         HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+        if (response.statusCode() == 404) {
+            throw new DownloadNotFoundException(key);
+        }
 
         if (response.statusCode() != 200) {
             throw new IOException("Unexpected HTTP status " + response.statusCode() + " for " + key.uri());
