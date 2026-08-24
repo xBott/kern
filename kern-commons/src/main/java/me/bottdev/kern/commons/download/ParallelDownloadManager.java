@@ -2,6 +2,7 @@ package me.bottdev.kern.commons.download;
 
 import me.bottdev.kern.commons.download.exceptions.DownloadCancelledException;
 import me.bottdev.kern.commons.download.exceptions.DownloadChecksumException;
+import me.bottdev.kern.commons.download.exceptions.DownloadHashSupplyException;
 import me.bottdev.kern.commons.download.exceptions.DownloadNotFoundException;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 /// Implementation of [DownloadManager] that uses [java.util.concurrent.ExecutorService] for concurrent downloading.
 public class ParallelDownloadManager implements DownloadManager {
@@ -112,7 +114,8 @@ public class ParallelDownloadManager implements DownloadManager {
             IOException,
             InterruptedException,
             DownloadChecksumException,
-            DownloadNotFoundException
+            DownloadNotFoundException,
+            DownloadHashSupplyException
     {
 
         DownloadKey key = task.key();
@@ -169,11 +172,19 @@ public class ParallelDownloadManager implements DownloadManager {
         }
 
         String actualHash = digest != null ? HexFormat.of().formatHex(digest.digest()) : null;
-        String expectedHash = options.checksum() != null ? options.checksum().expectedSupplier().get() : null;
+        if (options.checksum() != null && actualHash != null) {
+            String expectedHash;
+            try {
+                expectedHash = options.checksum().expectedSupplier().get();
+            } catch (Exception ex) {
+                Files.deleteIfExists(tempFile);
+                throw new DownloadHashSupplyException(key, ex);
+            }
 
-        if (actualHash != null && expectedHash != null && !expectedHash.equalsIgnoreCase(actualHash)) {
-            Files.deleteIfExists(tempFile);
-            throw new DownloadChecksumException(key, expectedHash, actualHash);
+            if (expectedHash != null && !expectedHash.equalsIgnoreCase(actualHash)) {
+                Files.deleteIfExists(tempFile);
+                throw new DownloadChecksumException(key, expectedHash, actualHash);
+            }
         }
 
         Files.move(tempFile, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
