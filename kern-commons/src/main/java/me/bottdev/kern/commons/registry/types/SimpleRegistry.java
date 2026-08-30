@@ -11,7 +11,15 @@ import java.util.function.Function;
 
 public class SimpleRegistry<K, T> implements Registry<K, T> {
 
-    private final Map<K, T> store = new ConcurrentHashMap<>();
+    private final Map<K, T> store;
+
+    public SimpleRegistry() {
+        store = new ConcurrentHashMap<>();
+    }
+
+    public SimpleRegistry(Map<K, T> initialStore) {
+        store = new ConcurrentHashMap<>(initialStore);
+    }
 
     @Override
     public boolean isRegistered(K key) {

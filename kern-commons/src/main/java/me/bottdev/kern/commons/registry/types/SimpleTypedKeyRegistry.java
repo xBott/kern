@@ -20,8 +20,15 @@ import java.util.function.Function;
 /// @param <T> the type of values stored in this registry
 public class SimpleTypedKeyRegistry<T> implements TypedKeyRegistry<T> {
 
-    private final Map<TypedKey<? extends T>, T> store = new ConcurrentHashMap<>();
+    private final Map<TypedKey<? extends T>, T> store;
 
+    public SimpleTypedKeyRegistry() {
+        store = new ConcurrentHashMap<>();
+    }
+
+    public SimpleTypedKeyRegistry(Map<TypedKey<? extends T>, T> initialStore) {
+        store = new ConcurrentHashMap<>(initialStore);
+    }
 
     @Override
     public <S extends T> boolean isRegistered(TypedKey<S> key) {

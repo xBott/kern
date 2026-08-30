@@ -7,11 +7,16 @@ import me.bottdev.kern.commons.registry.Registry;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class ClassToInstanceRegistry<T> implements Registry<Class<? extends T>, T> {
 
-    private final ClassToInstanceMap<T> registered = MutableClassToInstanceMap.create();
+    private final ClassToInstanceMap<T> store;
+
+    public ClassToInstanceRegistry() {
+        store = MutableClassToInstanceMap.create();
+    }
 
     @Override
     public boolean isRegistered(Class<? extends T> key) {
