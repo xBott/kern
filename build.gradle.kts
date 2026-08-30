@@ -50,7 +50,7 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 groupId = "me.bottdev"
-                artifactId = project.name
+                artifactId = project.path.substring(1).replace(":", "-")
                 version = "${project.version}"
                 from(components["java"])
             }
