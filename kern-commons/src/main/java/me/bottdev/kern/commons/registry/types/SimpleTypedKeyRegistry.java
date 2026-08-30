@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-/// Thread-safe, [ConcurrentHashMap]-backed implementation of [TypedRegistry].
+/// Thread-safe, [ConcurrentHashMap]-backed implementation of [TypedKeyRegistry].
 ///
 /// Key identity is defined entirely by [TypedKey]: two keys are equal when
 /// their `type()` and `qualifier()` are equal — the implementation
@@ -82,7 +82,7 @@ public class SimpleTypedKeyRegistry<T> implements TypedKeyRegistry<T> {
 
     @Override
     public Map<TypedKey<? extends T>, T> getMap() {
-        return store;
+        return Collections.unmodifiableMap(store);
     }
 
     @Override
