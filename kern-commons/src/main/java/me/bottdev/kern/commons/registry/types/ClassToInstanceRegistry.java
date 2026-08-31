@@ -20,28 +20,28 @@ public class ClassToInstanceRegistry<T> implements Registry<Class<? extends T>, 
 
     @Override
     public boolean isRegistered(Class<? extends T> key) {
-        return registered.containsKey(key);
+        return store.containsKey(key);
     }
 
     @Override
     public ClassToInstanceRegistry<T> register(Class<? extends T> key, T value) {
-        if (registered.containsKey(key)) {
-            throw new IllegalStateException("Key already registered: " + key.getName());
+        if (store.containsKey(key)) {
+            throw new IllegalStateException("Key already store: " + key.getName());
         }
-        registered.put(key, value);
+        store.put(key, value);
         return this;
     }
 
     @Override
     public ClassToInstanceRegistry<T> registerIfAbsent(Class<? extends T> key, Function<Class<? extends T>, T> function) {
-        if (registered.containsKey(key)) return this;
-        registered.put(key, function.apply(key));
+        if (store.containsKey(key)) return this;
+        store.put(key, function.apply(key));
         return this;
     }
 
     @Override
     public ClassToInstanceRegistry<T> registerOrReplace(Class<? extends T> key, T value) {
-        registered.put(key, value);
+        store.put(key, value);
         return this;
     }
 
@@ -54,37 +54,37 @@ public class ClassToInstanceRegistry<T> implements Registry<Class<? extends T>, 
 
     @Override
     public T unregister(Class<? extends T> key) {
-        return registered.remove(key);
+        return store.remove(key);
     }
 
     @Override
     public void clear() {
-        registered.clear();
+        store.clear();
     }
 
     @Override
     public T get(Class<? extends T> key) {
-        return registered.get(key);
+        return store.get(key);
     }
 
     @Override
     public Optional<T> find(Class<? extends T> key) {
-        return Optional.ofNullable(registered.getInstance(key));
+        return Optional.ofNullable(store.getInstance(key));
     }
 
     @Override
     public Collection<T> getAll() {
-        return registered.values();
+        return store.values();
     }
 
     @Override
     public Map<Class<? extends T>, T> getMap() {
-        return registered;
+        return store;
     }
 
     @Override
     public int size() {
-        return registered.size();
+        return store.size();
     }
 
 }
