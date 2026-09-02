@@ -7,14 +7,13 @@
 
 rootProject.name = "kern"
 
-include("kern-noema")
-include("kern-struct")
 include("kern-commons")
+include("kern-struct")
 include("kern-dependency")
-include("kern-meta")
-include("kern-meta:kern-meta-core")
-include("kern-meta:kern-meta-apt")
-
-include("kern-version")
-include("kern-memory")
 include("kern-dependency:api")
+include("kern-dependency:simple")
+include("kern-dependency:versioned")
+include("kern-meta")
+include("kern-meta:core")
+include("kern-meta:apt")
+include("kern-memory")

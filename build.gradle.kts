@@ -26,6 +26,20 @@ subprojects {
 
     extra["envVars"] = rootEnvVars
 
+    dependencies {
+        testImplementation(platform(rootProject.libs.junit.bom))
+        testImplementation(rootProject.libs.junit.jupiter)
+
+        testImplementation(rootProject.libs.mockito.core)
+        testImplementation(rootProject.libs.mockito.junit.jupiter)
+
+        testImplementation(rootProject.libs.assertj.core)
+
+        compileOnly(rootProject.libs.lombok)
+        testCompileOnly(rootProject.libs.lombok)
+        annotationProcessor(rootProject.libs.lombok)
+    }
+
     publishing {
         repositories {
             maven {
@@ -57,7 +71,12 @@ subprojects {
         }
     }
 
+    tasks.jar {
+        archiveBaseName = project.path.substring(1).replace(":", "-")
+    }
+
     tasks.test {
         useJUnitPlatform()
     }
+
 }

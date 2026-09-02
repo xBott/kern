@@ -83,7 +83,7 @@ class ParallelDownloadManagerTest {
         DownloadOptions options = DownloadOptions.builder().maxRetries(0).build();
 
         when(httpClient.<InputStream>send(any(HttpRequest.class), any())).thenReturn(httpResponse);
-        when(httpResponse.statusCode()).thenReturn(404);
+        when(httpResponse.statusCode()).thenReturn(500);
 
         // When
         DownloadTask task = downloadManager.download(uri, target, options);
@@ -95,7 +95,7 @@ class ParallelDownloadManagerTest {
         assertThatThrownBy(() -> task.completion().get())
                 .isInstanceOf(ExecutionException.class)
                 .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("Unexpected HTTP status 404");
+                .hasMessageContaining("Unexpected HTTP status 500");
     }
 
     @Test
