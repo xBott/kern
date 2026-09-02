@@ -7,7 +7,7 @@ public interface DiagnosticsBuilder<D extends Diagnostic> {
     boolean isEmpty();
 
     /// @return Indicates whether the builder contains any diagnostics of a specified type.
-    boolean has(DiagnosticType type);
+    boolean has(DiagnosticSeverity type);
 
     /// Adds a new diagnostics.
     DiagnosticsBuilder<D> append(D diagnostic);

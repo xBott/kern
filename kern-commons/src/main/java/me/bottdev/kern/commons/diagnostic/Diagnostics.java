@@ -15,26 +15,26 @@ public interface Diagnostics<D extends Diagnostic> extends Iterable<D> {
     boolean isEmpty();
 
     /// @return Indicates whether the set contains any diagnostics of a specified type.
-    boolean has(DiagnosticType type);
+    boolean has(DiagnosticSeverity type);
 
     /// @return Indicates whether the set contains any errors.
     default boolean hasErrors() {
-        return has(DiagnosticType.ERROR);
+        return has(DiagnosticSeverity.ERROR);
     }
 
     /// @return Indicates whether the set contains any warnings.
     default boolean hasWarnings() {
-        return has(DiagnosticType.WARN);
+        return has(DiagnosticSeverity.WARN);
     }
 
     /// @return A list of all diagnostics.
     List<D> all();
 
     /// @return A list of diagnostics with a specified type.
-    List<D> ofType(DiagnosticType type);
+    List<D> ofType(DiagnosticSeverity type);
 
     /// @return A snapshot of diagnostics grouped by theirs type.
-    Map<DiagnosticType, List<D>> grouped();
+    Map<DiagnosticSeverity, List<D>> grouped();
 
     /// @throws DiagnosticException if there are any errors present.
     default void throwIfHasErrors() throws DiagnosticException {

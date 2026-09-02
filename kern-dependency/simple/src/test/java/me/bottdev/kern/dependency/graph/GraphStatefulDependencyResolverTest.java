@@ -1,6 +1,6 @@
 package me.bottdev.kern.dependency.graph;
 
-import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.containers.SimpleDependentContainer;
@@ -186,7 +186,7 @@ class GraphStatefulDependencyResolverTest {
                 });
 
 
-        assertTrue(result2.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result2.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result2.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Duplicate<>("1"))
                 .contains(new DependencyDiagnostic.Duplicate<>("3"));
@@ -261,7 +261,7 @@ class GraphStatefulDependencyResolverTest {
                 });
 
 
-        assertTrue(result3.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result3.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result3.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Missing<>("8", "9"))
                 .contains(new DependencyDiagnostic.Missing<>("8", "13"));
@@ -311,7 +311,7 @@ class GraphStatefulDependencyResolverTest {
                             .hasSize(3);
                 });
 
-        assertTrue(result2.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result2.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result2.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Circular<>(new CyclePath<>(List.of("5", "6", "5"))));
 

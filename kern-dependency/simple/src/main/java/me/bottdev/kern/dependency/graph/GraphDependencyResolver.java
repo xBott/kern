@@ -1,7 +1,7 @@
 package me.bottdev.kern.dependency.graph;
 
 import lombok.NonNull;
-import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;
 import me.bottdev.kern.commons.diagnostic.DiagnosticsBuilder;
 import me.bottdev.kern.commons.diagnostic.ListDiagnostics;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
@@ -111,7 +111,7 @@ public class GraphDependencyResolver implements DependencyResolver {
 
         Graph<K, Directed<K>> graph = buildGraph(dependentContainer, diagnosticsBuilder);
 
-        if (diagnosticsBuilder.has(DiagnosticType.ERROR)) {
+        if (diagnosticsBuilder.has(DiagnosticSeverity.ERROR)) {
             return DiagnosticResult.failure(diagnosticsBuilder.build());
         }
 

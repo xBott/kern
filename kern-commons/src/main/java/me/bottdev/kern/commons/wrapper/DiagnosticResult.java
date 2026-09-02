@@ -2,7 +2,7 @@ package me.bottdev.kern.commons.wrapper;
 
 import me.bottdev.kern.commons.diagnostic.Diagnostic;
 import me.bottdev.kern.commons.diagnostic.exceptions.DiagnosticException;
-import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;
 import me.bottdev.kern.commons.diagnostic.Diagnostics;
 import org.jspecify.annotations.NonNull;
 
@@ -32,7 +32,7 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
     /// @return Indicates whether the wrapper holds any diagnostics.
     boolean hasDiagnostics();
     /// @return Indicates whether the wrapper holds diagnostics of a specified type.
-    boolean hasDiagnostics(DiagnosticType type);
+    boolean hasDiagnostics(DiagnosticSeverity type);
 
     /// @return [Diagnostics] or null
     Diagnostics<D> unwrapDiagnostics();
@@ -44,10 +44,10 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
 
     /// Executes a provided function that takes [Diagnostics] as an argument if diagnostics of
     /// specified type are present.
-    void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics<D>> consumer);
+    void ifDiagnosticsPresent(DiagnosticSeverity type, Consumer<Diagnostics<D>> consumer);
     /// Executes a provided function that takes [T] and [Diagnostics] as arguments if diagnostics of
     /// specified type are present.
-    void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics<D>> consumer);
+    void ifDiagnosticsPresent(DiagnosticSeverity type, BiConsumer<T, Diagnostics<D>> consumer);
 
     /// Folds the result into a single value by applying one of two functions depending on the state.
     ///
@@ -74,7 +74,7 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
     /// @throws IllegalArgumentException if diagnostics contain any errors.
     /// @return [Success] diagnostic result wrapper with provided value and diagnostics.
     static <T, D extends Diagnostic> DiagnosticResult<T, D> success(@NonNull T value, Diagnostics<D> diagnostics) {
-        if (diagnostics.has(DiagnosticType.ERROR))
+        if (diagnostics.has(DiagnosticSeverity.ERROR))
             throw new IllegalArgumentException("Diagnostics cannot contain errors in success diagnostic result.");
         return new Success<>(value, diagnostics);
     }
@@ -97,7 +97,7 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
         }
 
         @Override
-        public boolean hasDiagnostics(DiagnosticType type) {
+        public boolean hasDiagnostics(DiagnosticSeverity type) {
             return diagnostics != null && diagnostics.has(type);
         }
 
@@ -152,12 +152,12 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics<D>> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticSeverity type, Consumer<Diagnostics<D>> consumer) {
             if (hasDiagnostics(type)) consumer.accept(diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics<D>> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticSeverity type, BiConsumer<T, Diagnostics<D>> consumer) {
             if (hasDiagnostics(type)) consumer.accept(value, diagnostics);
         }
 
@@ -181,7 +181,7 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
         }
 
         @Override
-        public boolean hasDiagnostics(DiagnosticType type) {
+        public boolean hasDiagnostics(DiagnosticSeverity type) {
             return diagnostics != null && diagnostics.has(type);
         }
 
@@ -238,12 +238,12 @@ public sealed interface DiagnosticResult<T, D extends Diagnostic> extends Object
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, Consumer<Diagnostics<D>> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticSeverity type, Consumer<Diagnostics<D>> consumer) {
             if (hasDiagnostics(type)) consumer.accept(diagnostics);
         }
 
         @Override
-        public void ifDiagnosticsPresent(DiagnosticType type, BiConsumer<T, Diagnostics<D>> consumer) {
+        public void ifDiagnosticsPresent(DiagnosticSeverity type, BiConsumer<T, Diagnostics<D>> consumer) {
 
         }
 

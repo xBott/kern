@@ -1,6 +1,6 @@
 package me.bottdev.kern.dependency.graph;
 
-import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.Module;
@@ -66,7 +66,7 @@ class GraphVersionedDependencyResolverTest {
 
         DiagnosticResult<ResolutionResult<String, Module>, DependencyDiagnostic> result = resolver.resolve(container);
 
-        assertTrue(result.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Missing<>("1", "2"));
     }
@@ -100,7 +100,7 @@ class GraphVersionedDependencyResolverTest {
 
         DiagnosticResult<ResolutionResult<String, Module>, DependencyDiagnostic> result = resolver.resolve(container);
 
-        assertTrue(result.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.VersionMismatch<>("2", "1", ">=0.0.2", "0.0.1"));
     }
@@ -119,7 +119,7 @@ class GraphVersionedDependencyResolverTest {
 
         DiagnosticResult<ResolutionResult<String, Module>, DependencyDiagnostic> result = resolver.resolve(container);
 
-        assertTrue(result.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Circular<>(new CyclePath<>(List.of("1", "2", "1"))));
     }

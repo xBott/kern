@@ -2,7 +2,7 @@ package me.bottdev.kern.commons.diagnostic.exceptions;
 
 import lombok.Getter;
 import me.bottdev.kern.commons.diagnostic.Diagnostic;
-import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;
 import me.bottdev.kern.commons.diagnostic.Diagnostics;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class DiagnosticException extends RuntimeException {
 
     private static String buildMessage(Diagnostics diagnostics) {
 
-        List<Diagnostic> errors = diagnostics.ofType(DiagnosticType.ERROR);
+        List<Diagnostic> errors = diagnostics.ofType(DiagnosticSeverity.ERROR);
 
         if (errors.isEmpty()) {
             return "Diagnostics are empty.";

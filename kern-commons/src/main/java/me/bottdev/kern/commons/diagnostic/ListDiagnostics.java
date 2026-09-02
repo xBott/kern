@@ -19,8 +19,8 @@ public record ListDiagnostics<D extends Diagnostic>(
         }
 
         @Override
-        public boolean has(DiagnosticType type) {
-            return buffer.stream().anyMatch(diagnostic -> diagnostic.type() == type);
+        public boolean has(DiagnosticSeverity type) {
+            return buffer.stream().anyMatch(diagnostic -> diagnostic.severity() == type);
         }
 
         @Override
@@ -59,19 +59,19 @@ public record ListDiagnostics<D extends Diagnostic>(
         return items.isEmpty();
     }
 
-    private boolean computeHas(DiagnosticType type) {
+    private boolean computeHas(DiagnosticSeverity type) {
         return items.stream()
-                .anyMatch(item -> item.type() == type);
+                .anyMatch(item -> item.severity() == type);
     }
 
     @Override
-    public boolean has(DiagnosticType type) {
+    public boolean has(DiagnosticSeverity type) {
         return computeHas(type);
     }
 
     @Override
-    public List<D> ofType(DiagnosticType type) {
-        return items.stream().filter(item -> item.type() == type).toList();
+    public List<D> ofType(DiagnosticSeverity type) {
+        return items.stream().filter(item -> item.severity() == type).toList();
     }
 
     @Override
@@ -80,8 +80,8 @@ public record ListDiagnostics<D extends Diagnostic>(
     }
 
     @Override
-    public Map<DiagnosticType, List<D>> grouped() {
-        return items.stream().collect(Collectors.groupingBy(Diagnostic::type));
+    public Map<DiagnosticSeverity, List<D>> grouped() {
+        return items.stream().collect(Collectors.groupingBy(Diagnostic::severity));
     }
 
     @Override

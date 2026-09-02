@@ -1,6 +1,6 @@
 package me.bottdev.kern.dependency.graph;
 
-import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.Module;
@@ -212,7 +212,7 @@ class GraphStatefulVersionedDependencyResolverTest {
                 });
 
 
-        assertTrue(result2.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result2.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result2.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Duplicate<>("1"))
                 .contains(new DependencyDiagnostic.Duplicate<>("3"));
@@ -297,7 +297,7 @@ class GraphStatefulVersionedDependencyResolverTest {
                 });
 
 
-        assertTrue(result3.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result3.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result3.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Missing<>("8", "9"))
                 .contains(new DependencyDiagnostic.Missing<>("8", "13"));
@@ -355,7 +355,7 @@ class GraphStatefulVersionedDependencyResolverTest {
                             .hasSize(3);
                 });
 
-        assertTrue(result2.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result2.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result2.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.Circular<>(new CyclePath<>(List.of("5", "6", "5"))));
 
@@ -377,7 +377,7 @@ class GraphStatefulVersionedDependencyResolverTest {
 
         DiagnosticResult<ResolutionResult<String, Module>, DependencyDiagnostic> result = resolver.resolveAndRemember(container);
 
-        assertTrue(result.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result.hasDiagnostics(DiagnosticSeverity.ERROR));
         String actualVersion = "0.0.2";
         assertThat(result.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.VersionMismatch<>("3", "2", requiredVersionRange, actualVersion));
@@ -403,7 +403,7 @@ class GraphStatefulVersionedDependencyResolverTest {
 
         DiagnosticResult<ResolutionResult<String, Module>, DependencyDiagnostic> result = resolver.resolveAndRemember(container);
 
-        assertTrue(result.hasDiagnostics(DiagnosticType.ERROR));
+        assertTrue(result.hasDiagnostics(DiagnosticSeverity.ERROR));
         assertThat(result.unwrapDiagnostics())
                 .contains(new DependencyDiagnostic.VersionMismatch<>("2", "1", ">=0.0.2", "0.0.1"));
 
