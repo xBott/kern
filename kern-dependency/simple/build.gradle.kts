@@ -1,4 +1,4 @@
 dependencies {
-    implementation(project(":kern-dependency:api"))
+    api(project(":kern-dependency:api"))
 
 }

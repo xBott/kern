@@ -1,4 +1,4 @@
 dependencies {
-    implementation(libs.guava)
+    api(libs.guava)
 
 }

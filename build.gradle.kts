@@ -20,7 +20,7 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "java")
+    apply(plugin = "java-library")
     apply(plugin = "io.github.klahap.dotenv")
     apply(plugin = "maven-publish")
 

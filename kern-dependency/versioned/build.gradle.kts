@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":kern-dependency:api"))
-    implementation(libs.semver4j)
+    api(project(":kern-dependency:api"))
+    api(libs.semver4j)
 
 }

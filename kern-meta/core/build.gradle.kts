@@ -1,4 +1,4 @@
 dependencies {
-    implementation(project(":kern-commons"))
+    api(project(":kern-commons"))
 
 }

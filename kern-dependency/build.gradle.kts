@@ -1,8 +1,8 @@
 subprojects {
 
     dependencies {
-        implementation(project(":kern-commons"))
-        implementation(project(":kern-struct"))
+        api(project(":kern-commons"))
+        api(project(":kern-struct"))
     }
 
 }
