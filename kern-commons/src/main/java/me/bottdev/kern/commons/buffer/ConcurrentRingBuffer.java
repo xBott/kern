@@ -1,12 +1,16 @@
-package me.bottdev.kern.commons;
+package me.bottdev.kern.commons.buffer;
 
+import lombok.NonNull;
+
+import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReferenceArray;
-import java.util.function.Consumer;
 
 /// **Lock-free**, **thread-safe** ring buffer (MPMC, overwriting).
+/// Implements [RingBuffer] and extends [AbstractCollection].
 /// Guarantees:
 ///  - add() never blocks or waits
 ///  - On overflow, old data is silently overwritten
@@ -17,7 +21,7 @@ import java.util.function.Consumer;
 ///  - Actual position in the array: index & (capacity - 1)
 ///  - Each slot stores a sequence — an even value means “occupied and ready to read”
 ///  - Pattern taken from Disruptor / JCTools
-public class RingBuffer<T> {
+public class ConcurrentRingBuffer<T> extends AbstractCollection<T> implements RingBuffer<T> {
 
     private static final int RETRY_LIMIT = 64;
 
@@ -28,8 +32,7 @@ public class RingBuffer<T> {
 
     private final AtomicLong writeCounter = new AtomicLong(0);
 
-    public RingBuffer(int capacity) {
-
+    public ConcurrentRingBuffer(int capacity) {
         if (capacity <= 0)
             throw new IllegalArgumentException("Capacity must be positive");
         if (Integer.bitCount(capacity) != 1)
@@ -45,24 +48,28 @@ public class RingBuffer<T> {
         }
     }
 
+    @Override
     public int capacity() {
         return capacity;
     }
 
     /// Return an approximate size.
     /// It is not possible to ensure precise value in MPMC without locks
+    @Override
     public int size() {
         long w = writeCounter.get();
         return (int) Math.min(w, capacity);
     }
 
+    @Override
     public boolean isEmpty() {
         return writeCounter.get() == 0;
     }
 
     /// Adds an element. If buffer is full - overwrites the oldest element.
-    /// Never blocks.
-    public void add(T object) {
+    /// Never blocks. Returns true as per Collection contract when element is added.
+    @Override
+    public boolean add(T object) {
         long counter = writeCounter.getAndIncrement();
         int slot = (int) (counter & mask);
         long expectedSeq = counter * 2;
@@ -71,7 +78,6 @@ public class RingBuffer<T> {
         int retries = 0;
 
         while (true) {
-
             long s = seq.get();
             if (s == expectedSeq) break;
 
@@ -86,26 +92,20 @@ public class RingBuffer<T> {
         seq.set(expectedSeq + 1);
         data.set(slot, object);
         seq.set(expectedSeq + 2);
+        
+        return true;
     }
 
-    /// Iterates all the current elements from the oldest to the newest.
-    /// Snapshot is made atomically using writeIndex.
-    public void forEach(Consumer<T> consumer) {
-        long end = writeCounter.get();
-        long start = Math.max(0, end - capacity);
-
-        for (long counter = start; counter < end; counter++) {
-            int slot = (int) (counter & mask);
-            T value = readSlot(slot, counter);
-            if (value != null) {
-                consumer.accept(value);
-            }
-        }
+    @Override
+    @NonNull
+    public Iterator<T> iterator() {
+        return snapshot().iterator();
     }
 
     /**
      * Returns a consistent snapshot of the buffer (from old to new).
      */
+    @Override
     public List<T> snapshot() {
         long end = writeCounter.get();
         long start = Math.max(0, end - capacity);
@@ -124,6 +124,7 @@ public class RingBuffer<T> {
     /**
      * Clears the buffer. Not atomic: call only when there are no active writers.
      */
+    @Override
     public void clear() {
         writeCounter.set(0);
         for (int i = 0; i < capacity; i++) {
