@@ -1,7 +1,7 @@
 package me.bottdev.kern.commons.wrapper;
 
 import me.bottdev.kern.commons.diagnostic.Diagnostic;
-import me.bottdev.kern.commons.diagnostic.DiagnosticException;
+import me.bottdev.kern.commons.diagnostic.exceptions.DiagnosticException;
 import me.bottdev.kern.commons.diagnostic.DiagnosticType;
 import me.bottdev.kern.commons.diagnostic.Diagnostics;
 import org.jspecify.annotations.NonNull;

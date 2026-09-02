@@ -16,3 +16,5 @@ include("kern-meta:kern-meta-core")
 include("kern-meta:kern-meta-apt")
 
 include("kern-version")
+include("kern-memory")
+include("kern-dependency:api")

@@ -1,5 +1,7 @@
 package me.bottdev.kern.commons.diagnostic;
 
+import me.bottdev.kern.commons.diagnostic.exceptions.DiagnosticException;
+
 import java.util.List;
 import java.util.Map;
 

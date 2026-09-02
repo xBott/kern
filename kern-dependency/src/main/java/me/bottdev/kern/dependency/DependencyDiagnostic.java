@@ -4,8 +4,6 @@ import me.bottdev.kern.commons.diagnostic.Diagnostic;
 import me.bottdev.kern.commons.diagnostic.DiagnosticType;
 import me.bottdev.kern.dependency.versioned.VersionConflictEntry;
 import me.bottdev.kern.struct.paths.CyclePath;
-import me.bottdev.kern.version.SemVersion;
-import me.bottdev.kern.version.VersionRange;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;

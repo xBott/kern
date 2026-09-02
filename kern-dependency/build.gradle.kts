@@ -1,7 +1,6 @@
 dependencies {
     implementation(project(":kern-commons"))
     implementation(project(":kern-struct"))
-    implementation(project(":kern-version"))
 
     implementation(libs.guava)
 

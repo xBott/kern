@@ -1,6 +1,9 @@
-package me.bottdev.kern.commons.diagnostic;
+package me.bottdev.kern.commons.diagnostic.exceptions;
 
 import lombok.Getter;
+import me.bottdev.kern.commons.diagnostic.Diagnostic;
+import me.bottdev.kern.commons.diagnostic.DiagnosticType;
+import me.bottdev.kern.commons.diagnostic.Diagnostics;
 
 import java.util.List;
 
