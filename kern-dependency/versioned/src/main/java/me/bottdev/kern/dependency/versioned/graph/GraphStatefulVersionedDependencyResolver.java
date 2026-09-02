@@ -6,6 +6,7 @@ import me.bottdev.kern.commons.diagnostic.DiagnosticsBuilder;
 import me.bottdev.kern.commons.diagnostic.ListDiagnostics;
 import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
+import me.bottdev.kern.dependency.graph.GraphDependencyResolverState;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyAware;
 import me.bottdev.kern.dependency.versioned.VersionedDependencyRequest;
 import me.bottdev.kern.struct.algorithms.sort.CircularDependencyException;
