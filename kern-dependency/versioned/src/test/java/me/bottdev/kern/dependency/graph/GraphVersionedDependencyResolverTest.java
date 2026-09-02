@@ -5,6 +5,7 @@ import me.bottdev.kern.commons.wrapper.DiagnosticResult;
 import me.bottdev.kern.dependency.*;
 import me.bottdev.kern.dependency.Module;
 import me.bottdev.kern.dependency.containers.SimpleDependentContainer;
+import me.bottdev.kern.dependency.versioned.graph.GraphVersionedDependencyResolver;
 import me.bottdev.kern.struct.algorithms.cycle.SimpleCycleDetector;
 import me.bottdev.kern.struct.algorithms.sort.KahnSorter;
 import me.bottdev.kern.struct.paths.CyclePath;

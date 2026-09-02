@@ -1,4 +1,4 @@
-package me.bottdev.kern.dependency.graph;
+package me.bottdev.kern.dependency.versioned.graph;
 
 import lombok.NonNull;
 import me.bottdev.kern.commons.diagnostic.DiagnosticSeverity;

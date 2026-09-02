@@ -1,6 +1,7 @@
 package me.bottdev.kern.dependency;
 
 import lombok.NonNull;
+import me.bottdev.kern.dependency.simple.SimpleDependencyRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,6 +1,9 @@
-package me.bottdev.kern.dependency;
+package me.bottdev.kern.dependency.simple;
 
 import lombok.NonNull;
+import me.bottdev.kern.dependency.DependOrder;
+import me.bottdev.kern.dependency.DependencyLink;
+import me.bottdev.kern.dependency.DependencyRequest;
 
 /// Simple implementation of [DependencyRequest]
 ///
