@@ -10,8 +10,11 @@ public interface DiagnosticSink<D extends Diagnostic> {
     void accept(D diagnostic);
 
     /// Returns a composed sink that performs, in sequence, this operation followed by the `after` operation.
-    default DiagnosticSink<D> andThen(@NonNull DiagnosticSink<? super D> after) {
-        return (D d) -> { accept(d); after.accept(d); };
+    default DiagnosticSink<D> andThen(@NonNull DiagnosticSink<D> after) {
+        return (D d) -> {
+            accept(d);
+            after.accept(d);
+        };
     }
 
     /// A sink that ignores all incoming diagnostics.
