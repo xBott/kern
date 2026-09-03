@@ -26,14 +26,20 @@ subprojects {
 
     extra["envVars"] = rootEnvVars
 
+    java {
+        withSourcesJar()
+        withJavadocJar()
+
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    }
+
     dependencies {
         testImplementation(platform(rootProject.libs.junit.bom))
         testImplementation(rootProject.libs.junit.jupiter)
-
         testImplementation(rootProject.libs.mockito.core)
         testImplementation(rootProject.libs.mockito.junit.jupiter)
-
         testImplementation(rootProject.libs.assertj.core)
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
         compileOnly(rootProject.libs.lombok)
         testCompileOnly(rootProject.libs.lombok)
